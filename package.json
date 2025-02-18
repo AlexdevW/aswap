@@ -1,0 +1,10 @@
+{
+  "name": "aswap",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "pnpm --stream -r dev",
+    "build": "pnpm -r  build",
+    "test": "pnpm -r  test"
+  }
+}
