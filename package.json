@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "pnpm --stream -r dev",
-    "build": "pnpm -r  build",
-    "test": "pnpm -r  test"
+    "build": "pnpm -r build",
+    "test": "pnpm -r test"
   }
 }
