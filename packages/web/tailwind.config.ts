@@ -14,6 +14,6 @@ export default {
   plugins: [daisyui],
   daisyui: {
     // More details at https://daisyui.com/docs/config/
-    themes: ['dark'],
+    themes: ['sunset'],
   },
 } satisfies Config
