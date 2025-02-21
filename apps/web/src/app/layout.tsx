@@ -4,6 +4,9 @@ import "@/assets/styles/globals.css"
 import { Layout } from "@/components/Layout"
 import { Web3Provider } from "@/context/Web3"
 import { headers } from "next/headers"
+import { NuqsAdapter } from "@workspace/ui/components/data-table"
+import "@workspace/ui/globals.css"
+import { ThemeProvider } from "@/components/Provider"
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -32,9 +35,18 @@ export default async function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <Web3Provider cookies={cookies}>
-          <Layout>{children}</Layout>
-        </Web3Provider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <NuqsAdapter>
+            <Web3Provider cookies={cookies}>
+              <Layout>{children}</Layout>
+            </Web3Provider>
+          </NuqsAdapter>
+        </ThemeProvider>
       </body>
     </html>
   )
