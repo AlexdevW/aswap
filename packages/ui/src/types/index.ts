@@ -56,7 +56,3 @@ export interface DataTableRowAction<TData> {
   row: Row<TData>
   type: "update" | "delete"
 }
-
-export function A() {}
-
-export default {}

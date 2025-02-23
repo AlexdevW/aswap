@@ -4,9 +4,10 @@ import "@/assets/styles/globals.css"
 import { Layout } from "@/components/Layout"
 import { Web3Provider } from "@/context/Web3"
 import { headers } from "next/headers"
-import { NuqsAdapter } from "@workspace/ui/components/data-table"
 import "@workspace/ui/globals.css"
 import { ThemeProvider } from "@/components/Provider"
+import { Toaster } from "@workspace/ui/components/sonner"
+import { TailwindIndicator } from "@/components/tailwind-indicator"
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -31,9 +32,9 @@ export default async function RootLayout({
   const headersList = await headers()
   const cookies = headersList.get("cookie")
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable}  min-h-screen bg-background font-sans antialiased`}
       >
         <ThemeProvider
           attribute="class"
@@ -41,12 +42,12 @@ export default async function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <NuqsAdapter>
-            <Web3Provider cookies={cookies}>
-              <Layout>{children}</Layout>
-            </Web3Provider>
-          </NuqsAdapter>
+          <Web3Provider cookies={cookies}>
+            <Layout>{children}</Layout>
+          </Web3Provider>
+          <TailwindIndicator />
         </ThemeProvider>
+        <Toaster />
       </body>
     </html>
   )

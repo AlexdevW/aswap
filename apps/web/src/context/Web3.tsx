@@ -4,9 +4,9 @@ import { createAppKit } from "@reown/appkit/react"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { PropsWithChildren } from "react"
 import { cookieToInitialState, WagmiProvider, type Config } from "wagmi"
-import { WALLETCONNECT_ADAPTER, WALLETCONNECT_PROJECT_ID } from "@/utils/web3"
+import { WALLETCONNECT_ADAPTER, WALLETCONNECT_PROJECT_ID } from "@/lib/web3"
 import { SITE_NAME, SITE_INFO, SITE_URL } from "@/constants/site"
-import { ETH_CHAINS } from "@/utils/network"
+import { ETH_CHAINS } from "@/lib/network"
 import { mainnet } from "@reown/appkit/networks"
 
 interface Props extends PropsWithChildren {
