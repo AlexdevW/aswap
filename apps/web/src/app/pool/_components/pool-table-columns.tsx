@@ -42,7 +42,6 @@ export function getColumns(): ColumnDef<Pool>[] {
       cell: ({ row }) => <div>{shortenAddress(row.original.pool)}</div>,
       enableSorting: false,
       enableHiding: false,
-      enablePinning: true,
     },
     {
       accessorKey: "token0",
