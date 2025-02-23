@@ -5,9 +5,18 @@ import { useDataTable } from "@workspace/ui/hooks/use-data-table"
 import { getColumns } from "./pool-table-columns"
 import React from "react"
 import { Pool } from "@/types/pool"
+import { useReadPoolManagerGetAllPools } from "@/lib/contracts"
+import { getContractAddress } from "@/lib/utils"
+import { DataTableToolbar } from "@workspace/ui/components/data-table/data-table-toolbar"
+import { PoolTableToolbarActions } from "./pool-table-toolbar-actions"
 
-export default function PoolTable({ data }: { data: Pool[] }) {
+export default function PoolTable() {
   const columns = React.useMemo(() => getColumns(), [])
+  const { data = [], refetch } = useReadPoolManagerGetAllPools({
+    address: getContractAddress("PoolManager"),
+  })
+  console.log(data, "data")
+
   const { table } = useDataTable({
     data,
     columns,
@@ -25,5 +34,11 @@ export default function PoolTable({ data }: { data: Pool[] }) {
     // clearOnDefault: true,
   })
 
-  return <DataTable table={table}></DataTable>
+  return (
+    <DataTable table={table}>
+      <DataTableToolbar table={table}>
+        <PoolTableToolbarActions table={table} refetch={refetch} />
+      </DataTableToolbar>
+    </DataTable>
+  )
 }
