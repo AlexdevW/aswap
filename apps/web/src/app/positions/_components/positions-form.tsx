@@ -14,13 +14,6 @@ import {
 } from "@workspace/ui/components/form"
 import { Input } from "@workspace/ui/components/input"
 import { getContractAddress } from "@/lib/utils"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@workspace/ui/components/select"
 
 const formSchema = z
   .object({
@@ -34,49 +27,39 @@ const formSchema = z
       .min(42, "地址长度必须为42字符")
       .max(42, "地址长度必须为42字符")
       .regex(/^0x[a-fA-F0-9]{40}$/, "必须是有效的以太坊地址"),
-    fee: z.number().refine((val) => [3000, 500, 10000].includes(val), {
-      message: "请选择有效费率等级",
-    }),
-    tickLower: z
-      .number()
-      .int("必须为整数")
-      .min(-887272, "不能小于最小tick值")
-      .max(887272, "不能超过最大tick值"),
-    tickUpper: z
-      .number()
-      .int("必须为整数")
-      .min(-887272, "不能小于最小tick值")
-      .max(887272, "不能超过最大tick值"),
-    price: z
-      .number()
-      .min(0.000001, "价格不能低于0.000001")
-      .max(1000000, "价格不能超过1000000")
-      .multipleOf(0.000001, "最多支持6位小数"),
+    index: z.number().int().min(0, "索引不能小于0"),
+    amount0Desired: z
+      .string()
+      .min(1, "不能为空")
+      .regex(/^[0-9]+$/, "必须为有效的数字字符串"),
+    amount1Desired: z
+      .string()
+      .min(1, "不能为空")
+      .regex(/^[0-9]+$/, "必须为有效的数字字符串"),
   })
   .refine((data) => data.token0.toLowerCase() < data.token1.toLowerCase(), {
     message: "Token0地址必须按字母顺序排在Token1之前，请交换代币位置",
     path: ["token1"],
   })
 
-export type PoolFormType = z.infer<typeof formSchema>
+export type PositionsFormType = z.infer<typeof formSchema>
 
-interface PoolFormProps {
+interface PositionsFormProps {
   onSubmit?: (values: z.infer<typeof formSchema>) => void
 }
 
-const PoolForm = React.forwardRef<
+const PositionsForm = React.forwardRef<
   { submit: () => Promise<void> },
-  PoolFormProps
->(function PoolForm({ onSubmit }: PoolFormProps, ref) {
+  PositionsFormProps
+>(function PositionsForm({ onSubmit }: PositionsFormProps, ref) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       token0: getContractAddress("DebugTokenA"),
       token1: getContractAddress("DebugTokenB"),
-      fee: 3000,
-      tickLower: -887272,
-      tickUpper: 887272,
-      price: 1,
+      index: 0,
+      amount0Desired: "1000000000000000000",
+      amount1Desired: "1000000000000000000",
     },
   })
 
@@ -121,41 +104,15 @@ const PoolForm = React.forwardRef<
         />
         <FormField
           control={form.control}
-          name="fee"
+          name="index"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Fee</FormLabel>
-              <FormControl>
-                <Select
-                  onValueChange={(val) => field.onChange(Number(val))}
-                  defaultValue={String(field.value)}
-                >
-                  <SelectTrigger className="w-[180px]">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value={"3000"}>0.3%</SelectItem>
-                    <SelectItem value={"500"}>0.05%</SelectItem>
-                    <SelectItem value={"10000"}>1%</SelectItem>
-                  </SelectContent>
-                </Select>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="tickLower"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Tick Lower</FormLabel>
+              <FormLabel>Index</FormLabel>
               <FormControl>
                 <Input
                   type="number"
                   {...field}
                   onChange={(e) => {
-                    // 使用 parseFloat 转换并处理空值情况
                     const value =
                       e.target.value === "" ? 0 : parseFloat(e.target.value)
                     field.onChange(isNaN(value) ? 0 : value)
@@ -168,21 +125,12 @@ const PoolForm = React.forwardRef<
         />
         <FormField
           control={form.control}
-          name="tickUpper"
+          name="amount0Desired"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Tick Upper</FormLabel>
+              <FormLabel>Amount0 Desired</FormLabel>
               <FormControl>
-                <Input
-                  type="number"
-                  {...field}
-                  onChange={(e) => {
-                    // 使用 parseFloat 转换并处理空值情况
-                    const value =
-                      e.target.value === "" ? 0 : parseFloat(e.target.value)
-                    field.onChange(isNaN(value) ? 0 : value)
-                  }}
-                />
+                <Input {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -190,21 +138,12 @@ const PoolForm = React.forwardRef<
         />
         <FormField
           control={form.control}
-          name="price"
+          name="amount1Desired"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Init Price(token1/token0)</FormLabel>
+              <FormLabel>Amount1 Desired</FormLabel>
               <FormControl>
-                <Input
-                  type="number"
-                  {...field}
-                  onChange={(e) => {
-                    // 使用 parseFloat 转换并处理空值情况
-                    const value =
-                      e.target.value === "" ? 0 : parseFloat(e.target.value)
-                    field.onChange(isNaN(value) ? 0 : value)
-                  }}
-                />
+                <Input {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -215,4 +154,4 @@ const PoolForm = React.forwardRef<
   )
 })
 
-export default PoolForm
+export default PositionsForm

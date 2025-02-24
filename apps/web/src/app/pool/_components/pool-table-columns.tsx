@@ -7,7 +7,7 @@ import { Checkbox } from "@workspace/ui/components/checkbox"
 import { Pool } from "@/types/pool"
 import { shortenAddress } from "@/lib/utils"
 
-export function getColumns(): ColumnDef<Pool>[] {
+export function getColumns(): ColumnDef<Readonly<Pool>>[] {
   return [
     {
       id: "select",
@@ -61,44 +61,37 @@ export function getColumns(): ColumnDef<Pool>[] {
       accessorKey: "index",
       header: "Index",
       enableSorting: true,
-      enableHiding: false,
     },
     {
       accessorKey: "fee",
       header: "Fee",
       enableSorting: true,
-      enableHiding: false,
     },
     {
       accessorKey: "tickLower",
       header: () => <div className="whitespace-nowrap">Tick Lower</div>,
       enableSorting: true,
-      enableHiding: false,
     },
     {
       accessorKey: "tickUpper",
       header: () => <div className="whitespace-nowrap">Tick Upper</div>,
       enableSorting: true,
-      enableHiding: false,
     },
     {
       accessorKey: "tick",
       header: "Tick",
       enableSorting: true,
-      enableHiding: false,
     },
     {
       accessorKey: "liquidity",
       header: "Liquidity",
       enableSorting: true,
-      enableHiding: false,
       cell: ({ row }) => row.original.liquidity.toString(),
     },
     {
       accessorKey: "sqrtPriceX96",
       header: "Price",
       enableSorting: true,
-      enableHiding: false,
       cell: ({ row }) => row.original.sqrtPriceX96.toString(),
     },
   ]

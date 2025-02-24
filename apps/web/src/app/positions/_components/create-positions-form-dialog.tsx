@@ -23,47 +23,62 @@ import {
 import { useMediaQuery } from "@/hooks/use-media-query"
 import { Button } from "@workspace/ui/components/button"
 import { toast } from "@workspace/ui/components/sonner"
-import PoolForm, { PoolFormType } from "./pool-form"
-import { getContractAddress, parsePriceToSqrtPriceX96 } from "@/lib/utils"
-import { useWritePoolManagerCreateAndInitializePoolIfNecessary } from "@/lib/contracts"
+import PositionsForm, { PositionsFormType } from "./positions-form"
+import { getContractAddress } from "@/lib/utils"
+import { useWritePositionManagerMint } from "@/lib/contracts"
+import { useAccount } from "wagmi"
 
-interface CreatePoolDialogProps
+interface CreatePositionsDialogProps
   extends React.ComponentPropsWithoutRef<typeof Dialog> {
   showTrigger?: boolean
   onSuccess?: () => void
 }
 
-export function CreatePoolDialog({
+export function CreatePositionsDialog({
   showTrigger = true,
   onSuccess,
   ...props
-}: CreatePoolDialogProps) {
+}: CreatePositionsDialogProps) {
   const [open, setOpen] = React.useState(false)
   const [isCreatePending, startCreateTransition] = React.useTransition()
   const isDesktop = useMediaQuery("(min-width: 640px)")
   const formRef = React.useRef<{ submit: () => Promise<void> }>(null)
-  const { writeContractAsync } =
-    useWritePoolManagerCreateAndInitializePoolIfNecessary()
+  const { writeContractAsync } = useWritePositionManagerMint()
+  const account = useAccount()
 
-  function onSubmit(createParams: PoolFormType) {
+  function onSubmit(createParams: PositionsFormType) {
     startCreateTransition(async () => {
+      if (account?.address === undefined) {
+        toast.error("Please connect wallet first")
+        return
+      }
+      console.log({
+        token0: createParams.token0 as `0x${string}`,
+        token1: createParams.token1 as `0x${string}`,
+        index: createParams.index,
+        amount0Desired: BigInt(createParams.amount0Desired),
+        amount1Desired: BigInt(createParams.amount1Desired),
+        recipient: account?.address as `0x${string}`,
+        deadline: BigInt(Date.now() + 100000),
+      })
       try {
         await writeContractAsync({
-          address: getContractAddress("PoolManager"),
+          address: getContractAddress("PositionManager"),
           args: [
             {
               token0: createParams.token0 as `0x${string}`,
               token1: createParams.token1 as `0x${string}`,
-              fee: createParams.fee,
-              tickLower: createParams.tickLower,
-              tickUpper: createParams.tickUpper,
-              sqrtPriceX96: parsePriceToSqrtPriceX96(createParams.price),
+              index: createParams.index,
+              amount0Desired: BigInt(createParams.amount0Desired),
+              amount1Desired: BigInt(createParams.amount1Desired),
+              recipient: account?.address as `0x${string}`,
+              deadline: BigInt(Date.now() + 100000),
             },
           ],
         })
         setOpen(false)
         props.onOpenChange?.(false)
-        toast.success("Create Pool Successful")
+        toast.success("Create Position Successful")
         onSuccess?.()
       } catch (error: unknown) {
         console.log(error, "error")
@@ -89,15 +104,15 @@ export function CreatePoolDialog({
         ) : null}
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Create Pool</DialogTitle>
+            <DialogTitle>Create Positions</DialogTitle>
           </DialogHeader>
-          <PoolForm ref={formRef} onSubmit={onSubmit} />
+          <PositionsForm ref={formRef} onSubmit={onSubmit} />
           <DialogFooter className="gap-2 sm:space-x-0">
             <DialogClose asChild>
               <Button variant="outline">Cancel</Button>
             </DialogClose>
             <Button
-              aria-label="Add a new pool"
+              aria-label="Add a new Positions"
               onClick={() => formRef.current?.submit()}
               disabled={isCreatePending}
             >
@@ -127,17 +142,17 @@ export function CreatePoolDialog({
       ) : null}
       <DrawerContent>
         <DrawerHeader>
-          <DrawerTitle>Create Pool</DrawerTitle>
+          <DrawerTitle>Create Positions</DrawerTitle>
         </DrawerHeader>
         <div className="px-5">
-          <PoolForm ref={formRef} onSubmit={onSubmit} />
+          <PositionsForm ref={formRef} onSubmit={onSubmit} />
         </div>
         <DrawerFooter className="gap-2 sm:space-x-0">
           <DrawerClose asChild>
             <Button variant="outline">Cancel</Button>
           </DrawerClose>
           <Button
-            aria-label="Add a new pool"
+            aria-label="Add a new Positions"
             onClick={() => formRef.current?.submit()}
             disabled={isCreatePending}
           >

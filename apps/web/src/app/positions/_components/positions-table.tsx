@@ -2,34 +2,29 @@
 
 import { DataTable } from "@workspace/ui/components/data-table"
 import { useDataTable } from "@workspace/ui/hooks/use-data-table"
-import { getColumns } from "./pool-table-columns"
+import { getColumns } from "./positions-table-columns"
 import React from "react"
-import { Pool } from "@/types/pool"
-import { useReadPoolManagerGetAllPools } from "@/lib/contracts"
+import { useReadPositionManagerGetAllPositions } from "@/lib/contracts"
 import { getContractAddress } from "@/lib/utils"
 import { DataTableToolbar } from "@workspace/ui/components/data-table/data-table-toolbar"
-import { PoolTableToolbarActions } from "./pool-table-toolbar-actions"
+import { PoolTableToolbarActions } from "./positions-table-toolbar-actions"
+import { Positions } from "@/types/positions"
 
-export default function PoolTable() {
+export default function PositionsTable() {
   const columns = React.useMemo(() => getColumns(), [])
-  const { data = [], refetch } = useReadPoolManagerGetAllPools({
-    address: getContractAddress("PoolManager"),
+  const { data = [], refetch } = useReadPositionManagerGetAllPositions({
+    address: getContractAddress("PositionManager"),
   })
-  console.log(data, "data")
+
   const { table } = useDataTable({
-    data: data as Pool[],
+    data: data as Positions[],
     columns,
     pageCount: Math.ceil(data.length / 10),
-    enableColumnResizing: true,
-    // enableAdvancedFilter: enableAdvancedTable,
     initialState: {
-      //   sorting: [{ id: "amount", desc: true }],
       columnPinning: { right: ["sqrtPriceX96"], left: ["select", "pool"] },
     },
-    getRowId: (originalRow: Pool) =>
+    getRowId: (originalRow) =>
       `${originalRow.index}${originalRow.token0}${originalRow.token1}`,
-    // shallow: false,
-    // clearOnDefault: true,
   })
 
   return (

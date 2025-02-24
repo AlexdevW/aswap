@@ -1,14 +1,12 @@
 "use client"
 
 import type { Table } from "@tanstack/react-table"
-import { CreatePoolDialog } from "./create-pool-form-dialog"
-import { Pool } from "@/types/pool"
+import { CreatePositionsDialog } from "./create-positions-form-dialog"
 import { QueryObserverBaseResult } from "@tanstack/react-query"
-import Link from "next/link"
-import { Button } from "@workspace/ui/components/button"
+import { Positions } from "@/types/positions"
 
 interface PoolTableToolbarActionsProps {
-  table: Table<Pool>
+  table: Table<Positions>
   refetch: QueryObserverBaseResult["refetch"]
 }
 
@@ -17,10 +15,7 @@ export function PoolTableToolbarActions({
 }: PoolTableToolbarActionsProps) {
   return (
     <div className="flex items-center gap-2">
-      <Link href="/positions">
-        <Button size="sm">Positions</Button>
-      </Link>
-      <CreatePoolDialog onSuccess={() => refetch()} />
+      <CreatePositionsDialog onSuccess={() => refetch()} />
     </div>
   )
 }
