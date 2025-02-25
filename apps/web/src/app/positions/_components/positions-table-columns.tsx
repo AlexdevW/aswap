@@ -2,10 +2,38 @@
 
 import type { ColumnDef } from "@tanstack/react-table"
 import * as React from "react"
-import { shortenAddress } from "@/lib/utils"
+import { getContractAddress, shortenAddress } from "@/lib/utils"
 import { Positions } from "@/types/positions"
+import { Config, UseAccountReturnType } from "wagmi"
+import { QueryObserverBaseResult } from "@tanstack/react-query"
+import { toast } from "@workspace/ui/components/sonner"
+import {
+  useWritePositionManagerCollect,
+  useWritePositionManagerBurn,
+} from "@/lib/contracts"
+import { Button } from "@workspace/ui/components/button"
 
-export function getColumns(): ColumnDef<Positions>[] {
+type WriteCollectType = ReturnType<
+  typeof useWritePositionManagerCollect
+>["writeContractAsync"]
+
+type WriteBurnType = ReturnType<
+  typeof useWritePositionManagerBurn
+>["writeContractAsync"]
+
+type GetColumnsType = {
+  account: UseAccountReturnType<Config>
+  refetch: QueryObserverBaseResult["refetch"]
+  writePositionManagerBurn: WriteBurnType
+  writePositionManagerCollect: WriteCollectType
+}
+
+export function getColumns({
+  account,
+  refetch,
+  writePositionManagerBurn,
+  writePositionManagerCollect,
+}: GetColumnsType): ColumnDef<Positions>[] {
   return [
     {
       accessorKey: "id",
@@ -16,6 +44,7 @@ export function getColumns(): ColumnDef<Positions>[] {
       accessorKey: "owner",
       header: "Owner",
       enableSorting: false,
+      cell: ({ row }) => <div>{shortenAddress(row.original.owner)}</div>,
     },
     {
       accessorKey: "token0",
@@ -75,6 +104,65 @@ export function getColumns(): ColumnDef<Positions>[] {
       header: () => (
         <div className="whitespace-nowrap">Fee Growth Inside 1</div>
       ),
+    },
+    {
+      accessorKey: "actions",
+      header: "Actions",
+      cell: ({ row }) => {
+        if (row.original.owner !== account?.address) {
+          return "-"
+        }
+
+        return (
+          <div>
+            {row.original.liquidity > 0 && (
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={async () => {
+                  try {
+                    await writePositionManagerBurn({
+                      address: getContractAddress("PositionManager"),
+                      args: [row.original.id],
+                    })
+                    refetch()
+                  } catch (error: unknown) {
+                    if (error instanceof Error) {
+                      toast.error(error.message)
+                    }
+                  }
+                }}
+              >
+                Remove
+              </Button>
+            )}
+            {(row.original.tokensOwed0 > 0 || row.original.tokensOwed1 > 0) && (
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={async () => {
+                  try {
+                    await writePositionManagerCollect({
+                      address: getContractAddress("PositionManager"),
+                      args: [
+                        row.original.id,
+                        account?.address as `0x${string}`,
+                      ],
+                    })
+                    refetch()
+                  } catch (error: unknown) {
+                    if (error instanceof Error) {
+                      toast.error(error.message)
+                    }
+                  }
+                }}
+              >
+                Collect
+              </Button>
+            )}
+          </div>
+        )
+      },
     },
   ]
 }

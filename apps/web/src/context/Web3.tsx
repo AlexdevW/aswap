@@ -29,7 +29,7 @@ createAppKit({
   defaultNetwork: mainnet,
   metadata: metadata,
   features: {
-    analytics: true, // Optional - defaults to your Cloud configuration
+    analytics: false, // Optional - defaults to your Cloud configuration
     email: true,
     onramp: true,
     swaps: true,

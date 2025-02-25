@@ -5,7 +5,7 @@ import * as React from "react"
 import { DataTableColumnHeader } from "@workspace/ui/components/data-table/data-table-column-header"
 import { Checkbox } from "@workspace/ui/components/checkbox"
 import { Pool } from "@/types/pool"
-import { shortenAddress } from "@/lib/utils"
+import { parseSqrtPriceX96ToPrice, shortenAddress } from "@/lib/utils"
 
 export function getColumns(): ColumnDef<Readonly<Pool>>[] {
   return [
@@ -92,7 +92,7 @@ export function getColumns(): ColumnDef<Readonly<Pool>>[] {
       accessorKey: "sqrtPriceX96",
       header: "Price",
       enableSorting: true,
-      cell: ({ row }) => row.original.sqrtPriceX96.toString(),
+      cell: ({ row }) => parseSqrtPriceX96ToPrice(row.original.sqrtPriceX96),
     },
   ]
 }
