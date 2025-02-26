@@ -24,6 +24,7 @@ import {
 import { uniq } from "lodash-es"
 import { useAccount, usePublicClient } from "wagmi"
 import { toast } from "@workspace/ui/components/sonner"
+import useTokenBalance from "@/hooks/use-token-balance"
 
 export default function Swap() {
   const account = useAccount()
@@ -52,6 +53,9 @@ export default function Swap() {
   const [amountA, setAmountA] = useState<number | undefined>()
   const [amountB, setAmountB] = useState<number | undefined>()
 
+  const tokenABalance = useTokenBalance(tokenA)
+  const tokenBBalance = useTokenBalance(tokenB)
+
   // 获取所有的交易对
   const { data: pairs } = useReadPoolManagerGetPairs({
     address: getContractAddress("PoolManager"),
@@ -62,8 +66,8 @@ export default function Swap() {
       pairs?.map((pair) => [pair.token0, pair.token1]).flat()
     ).map(getTokenInfo)
     setTokens(options)
-    setTokenA(options[0])
-    setTokenB(options[1])
+    // setTokenA(options[0])
+    // setTokenB(options[1])
   }, [pairs])
 
   // 获取所有的交易池
@@ -238,7 +242,7 @@ export default function Swap() {
             sqrtPriceLimitX96,
             indexPath: swapIndexPath,
           }
-          console.log("swapParams", swapParams)
+
           await writeApprove({
             address: tokenAddressA!,
             args: [getContractAddress("SwapRouter"), swapParams.amountIn],
@@ -258,7 +262,7 @@ export default function Swap() {
             sqrtPriceLimitX96,
             indexPath: swapIndexPath,
           }
-          console.log("swapParams", swapParams)
+
           await writeApprove({
             address: tokenAddressA!,
             args: [
@@ -279,43 +283,58 @@ export default function Swap() {
     })
   }
 
+  const sellOptions = React.useMemo(
+    () => tokens.filter((t) => t !== tokenB),
+    [tokens, tokenB]
+  )
+
+  const buyOptions = React.useMemo(
+    () => tokens.filter((t) => t !== tokenA),
+    [tokens, tokenA]
+  )
+
   return (
     <div>
-      <div className="w-[350px] mx-auto my-8 flex flex-col justify-center items-center gap-0.5">
+      <div className="w-[480px] mx-auto my-8 flex flex-col justify-center items-center gap-1 bg-white p-2 rounded-3xl">
         <SwapCard
           title="出售"
-          options={tokens}
+          options={sellOptions}
           onAmountChange={handleAmountAChange}
           onTokenChange={setTokenA}
           token={tokenA}
           amount={amountA}
+          balance={tokenABalance}
+          sellModel
         />
         <div className="relative">
           <Button
             variant="outline"
             size="icon"
-            className="absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2"
+            className="absolute shadow-none top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 p-5 bg-secondary rounded-full border-white border-8 hover:bg-background transition-all active:scale-95"
             onClick={handleSwitch}
           >
-            <ArrowDown />
+            <ArrowDown size={20} className="!size-5" />
           </Button>
         </div>
         <SwapCard
           title="购买"
-          options={tokens}
+          options={buyOptions}
           onAmountChange={handleAmountBChange}
           onTokenChange={setTokenB}
           token={tokenB}
           amount={amountB}
+          balance={tokenBBalance}
         />
         <Button
-          className="w-full mt-2"
+          className="w-full mt-1 rounded-xl"
           onClick={handleTransaction}
           disabled={
             !tokenAddressA ||
             !tokenAddressB ||
             !amountA ||
             !amountB ||
+            !tokenABalance ||
+            amountA > tokenABalance ||
             isCreatePending
           }
         >

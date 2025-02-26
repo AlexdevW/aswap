@@ -43,6 +43,7 @@ export default function Faucet() {
         <Button
           variant="outline"
           size="sm"
+          className="bg-white border-none rounded-full active:scale-95"
           onClick={() => claim(getContractAddress("DebugTokenA"), "DTA")}
         >
           DTA
@@ -51,6 +52,7 @@ export default function Faucet() {
         <Button
           variant="outline"
           size="sm"
+          className="bg-white border-none rounded-full active:scale-95"
           onClick={() => claim(getContractAddress("DebugTokenB"), "DTB")}
         >
           DTB
@@ -59,6 +61,7 @@ export default function Faucet() {
         <Button
           variant="outline"
           size="sm"
+          className="bg-white border-none rounded-full active:scale-95"
           onClick={() => claim(getContractAddress("DebugTokenB"), "DTB")}
         >
           DTC

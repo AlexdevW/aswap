@@ -1,4 +1,3 @@
-import { useAccount } from "wagmi"
 import Faucet from "./_components/faucet"
 import Swap from "./_components/swap"
 
