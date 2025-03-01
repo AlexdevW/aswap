@@ -2,27 +2,12 @@
 import { Loader, PlusIcon } from "lucide-react"
 import * as React from "react"
 
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@workspace/ui/components/dialog"
-import {
-  Drawer,
-  DrawerClose,
-  DrawerContent,
-  DrawerFooter,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerTrigger,
-} from "@workspace/ui/components/drawer"
-import { useMediaQuery } from "@/hooks/use-media-query"
 import { Button } from "@workspace/ui/components/button"
 import { toast } from "@workspace/ui/components/sonner"
+import {
+  DialogCloseButton,
+  ResponsiveDialog,
+} from "@/components/responsive-dialog"
 import PoolForm, { PoolFormType } from "./pool-form"
 import {
   getContractAddress,
@@ -30,27 +15,55 @@ import {
   priceToTick,
 } from "@/lib/utils"
 import { useWritePoolManagerCreateAndInitializePoolIfNecessary } from "@/lib/contracts"
+import { Dialog } from "@workspace/ui/components/dialog"
+import { handleTransactionError } from "@/lib/error-handlers"
 
 interface CreatePoolDialogProps
   extends React.ComponentPropsWithoutRef<typeof Dialog> {
-  showTrigger?: boolean
   onSuccess?: () => void
+  open?: boolean
+  onOpenChange?: (open: boolean) => void
+}
+
+enum TransactionStatus {
+  IDLE = "idle",
+  CREATING_POOL = "creating_pool",
+}
+
+const buttonTextMap: Record<TransactionStatus, string> = {
+  [TransactionStatus.IDLE]: "提交",
+  [TransactionStatus.CREATING_POOL]: "正在创建交易池...",
 }
 
 export function CreatePoolDialog({
-  showTrigger = true,
   onSuccess,
+  open: controlledOpen,
+  onOpenChange,
   ...props
 }: CreatePoolDialogProps) {
-  const [open, setOpen] = React.useState(false)
-  const [isCreatePending, startCreateTransition] = React.useTransition()
-  const isDesktop = useMediaQuery("(min-width: 640px)")
+  const [uncontrolledOpen, setUncontrolledOpen] = React.useState(false)
+  const [txStatus, setTxStatus] = React.useState<TransactionStatus>(
+    TransactionStatus.IDLE
+  )
+  const open = controlledOpen !== undefined ? controlledOpen : uncontrolledOpen
+
+  const handleOpenChange = React.useCallback(
+    (nextOpen: boolean) => {
+      setUncontrolledOpen(nextOpen)
+      onOpenChange?.(nextOpen)
+      setTxStatus(TransactionStatus.IDLE)
+    },
+    [onOpenChange]
+  )
+
   const formRef = React.useRef<{ submit: () => Promise<void> }>(null)
   const { writeContractAsync } =
     useWritePoolManagerCreateAndInitializePoolIfNecessary()
 
-  function onSubmit(createParams: PoolFormType) {
-    startCreateTransition(async () => {
+  // 处理提交逻辑
+  const handleSubmit = React.useCallback(
+    async (createParams: PoolFormType) => {
+      setTxStatus(TransactionStatus.CREATING_POOL)
       const [token0, token1] =
         createParams.tokenA > createParams.tokenB
           ? [createParams.tokenB, createParams.tokenA]
@@ -70,93 +83,54 @@ export function CreatePoolDialog({
             },
           ],
         })
-        setOpen(false)
-        props.onOpenChange?.(false)
-        toast.success("Create Pool Successful")
+        handleOpenChange(false)
+        toast.success("创建交易池成功")
         onSuccess?.()
       } catch (error: unknown) {
-        console.log(error, "error")
-        if (error instanceof Error) {
-          toast.error(error.message)
-        } else {
-          toast.error("An unknown error occurred")
-        }
+        toast.error(handleTransactionError(error))
+      } finally {
+        setTxStatus(TransactionStatus.IDLE)
       }
-    })
-  }
+    },
+    [writeContractAsync, handleOpenChange, onSuccess]
+  )
 
-  if (isDesktop) {
-    return (
-      <Dialog open={open} onOpenChange={setOpen} {...props}>
-        {showTrigger ? (
-          <DialogTrigger asChild>
-            <Button variant="outline" size="sm">
-              <PlusIcon className="size-4" aria-hidden="true" />
-              New
-            </Button>
-          </DialogTrigger>
-        ) : null}
-        <DialogContent className="bg-white !rounded-3xl">
-          <DialogHeader>
-            <DialogTitle>创建交易池</DialogTitle>
-          </DialogHeader>
-          <PoolForm ref={formRef} onSubmit={onSubmit} />
-          <DialogFooter className="gap-2 sm:space-x-0">
-            <DialogClose asChild>
-              <Button variant="outline">Cancel</Button>
-            </DialogClose>
-            <Button
-              aria-label="Add a new pool"
-              onClick={() => formRef.current?.submit()}
-              disabled={isCreatePending}
-            >
-              {isCreatePending && (
-                <Loader
-                  className="mr-2 size-4 animate-spin"
-                  aria-hidden="true"
-                />
-              )}
-              Submit
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-    )
-  }
+  const isCreatePending = txStatus !== TransactionStatus.IDLE
 
   return (
-    <Drawer open={open} onOpenChange={setOpen} {...props}>
-      {showTrigger ? (
-        <DrawerTrigger asChild>
-          <Button variant="outline" size="sm">
-            <PlusIcon className="size-4" aria-hidden="true" />
-            New
-          </Button>
-        </DrawerTrigger>
-      ) : null}
-      <DrawerContent>
-        <DrawerHeader>
-          <DrawerTitle>Create Pool</DrawerTitle>
-        </DrawerHeader>
-        <div className="px-5">
-          <PoolForm ref={formRef} onSubmit={onSubmit} />
-        </div>
-        <DrawerFooter className="gap-2 sm:space-x-0">
-          <DrawerClose asChild>
-            <Button variant="outline">Cancel</Button>
-          </DrawerClose>
+    <ResponsiveDialog
+      open={open}
+      onOpenChange={handleOpenChange}
+      trigger={
+        <Button variant="outline" size="sm">
+          <PlusIcon className="size-4" aria-hidden="true" />
+          新建
+        </Button>
+      }
+      title="创建交易池"
+      contentClassName="bg-white !rounded-3xl"
+      footer={
+        <>
+          <DialogCloseButton>
+            <Button disabled={isCreatePending} variant="outline">
+              取消
+            </Button>
+          </DialogCloseButton>
           <Button
-            aria-label="Add a new pool"
+            aria-label="添加新交易池"
             onClick={() => formRef.current?.submit()}
             disabled={isCreatePending}
           >
             {isCreatePending && (
               <Loader className="mr-2 size-4 animate-spin" aria-hidden="true" />
             )}
-            Submit
+            {buttonTextMap[txStatus]}
           </Button>
-        </DrawerFooter>
-      </DrawerContent>
-    </Drawer>
+        </>
+      }
+      {...props}
+    >
+      <PoolForm ref={formRef} onSubmit={handleSubmit} />
+    </ResponsiveDialog>
   )
 }

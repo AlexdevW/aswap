@@ -120,9 +120,9 @@ const PositionsForm = React.forwardRef<
   const tokenBBalance = useTokenBalance(tokenBAddress as `0x${string}`)
 
   const isInsufficientBalanceA =
-    amount0Desired && tokenABalance && Number(amount0Desired) > tokenABalance
+    Number(tokenABalance) <= 0 || Number(amount0Desired) > Number(tokenABalance)
   const isInsufficientBalanceB =
-    amount1Desired && tokenBBalance && Number(amount1Desired) > tokenBBalance
+    Number(tokenBBalance) <= 0 || Number(amount1Desired) > Number(tokenBBalance)
 
   function handleSubmit(values: z.infer<typeof formSchema>) {
     if (isInsufficientBalanceA || isInsufficientBalanceB) {
