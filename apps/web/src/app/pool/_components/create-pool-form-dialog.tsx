@@ -24,7 +24,11 @@ import { useMediaQuery } from "@/hooks/use-media-query"
 import { Button } from "@workspace/ui/components/button"
 import { toast } from "@workspace/ui/components/sonner"
 import PoolForm, { PoolFormType } from "./pool-form"
-import { getContractAddress, parsePriceToSqrtPriceX96 } from "@/lib/utils"
+import {
+  getContractAddress,
+  parsePriceToSqrtPriceX96,
+  priceToTick,
+} from "@/lib/utils"
 import { useWritePoolManagerCreateAndInitializePoolIfNecessary } from "@/lib/contracts"
 
 interface CreatePoolDialogProps
@@ -47,16 +51,21 @@ export function CreatePoolDialog({
 
   function onSubmit(createParams: PoolFormType) {
     startCreateTransition(async () => {
+      const [token0, token1] =
+        createParams.tokenA > createParams.tokenB
+          ? [createParams.tokenB, createParams.tokenA]
+          : [createParams.tokenA, createParams.tokenB]
+
       try {
         await writeContractAsync({
           address: getContractAddress("PoolManager"),
           args: [
             {
-              token0: createParams.token0 as `0x${string}`,
-              token1: createParams.token1 as `0x${string}`,
+              token0: token0 as `0x${string}`,
+              token1: token1 as `0x${string}`,
               fee: createParams.fee,
-              tickLower: createParams.tickLower,
-              tickUpper: createParams.tickUpper,
+              tickLower: priceToTick(createParams.priceLower),
+              tickUpper: priceToTick(createParams.priceUpper),
               sqrtPriceX96: parsePriceToSqrtPriceX96(createParams.price),
             },
           ],
@@ -87,9 +96,9 @@ export function CreatePoolDialog({
             </Button>
           </DialogTrigger>
         ) : null}
-        <DialogContent>
+        <DialogContent className="bg-white !rounded-3xl">
           <DialogHeader>
-            <DialogTitle>Create Pool</DialogTitle>
+            <DialogTitle>创建交易池</DialogTitle>
           </DialogHeader>
           <PoolForm ref={formRef} onSubmit={onSubmit} />
           <DialogFooter className="gap-2 sm:space-x-0">

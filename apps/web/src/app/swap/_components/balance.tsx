@@ -1,4 +1,3 @@
-import useTokenAddress from "@/hooks/use-token-address"
 import { useReadErc20BalanceOf } from "@/lib/contracts"
 import { Token } from "@/types/swap"
 import { useAccount } from "wagmi"
@@ -9,7 +8,8 @@ interface Props {
 
 export default function Balance(props: Props) {
   const { address } = useAccount()
-  const tokenAddress = useTokenAddress(props.token)
+
+  const tokenAddress = props.token?.address
   const { data: balance } = useReadErc20BalanceOf({
     address: tokenAddress,
     args: [address as `0x${string}`],

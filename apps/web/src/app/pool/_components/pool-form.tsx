@@ -7,6 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -21,42 +22,36 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@workspace/ui/components/select"
+import TokenSelectModal from "@/components/TokenSelectModal"
+import { ChevronDown } from "lucide-react"
+import useDebugTokensInfo from "@/hooks/use-debug-token-info"
 
-const formSchema = z
-  .object({
-    token0: z
-      .string()
-      .min(42, "地址长度必须为42字符")
-      .max(42, "地址长度必须为42字符")
-      .regex(/^0x[a-fA-F0-9]{40}$/, "必须是有效的以太坊地址"),
-    token1: z
-      .string()
-      .min(42, "地址长度必须为42字符")
-      .max(42, "地址长度必须为42字符")
-      .regex(/^0x[a-fA-F0-9]{40}$/, "必须是有效的以太坊地址"),
-    fee: z.number().refine((val) => [3000, 500, 10000].includes(val), {
-      message: "请选择有效费率等级",
-    }),
-    tickLower: z
-      .number()
-      .int("必须为整数")
-      .min(-887272, "不能小于最小tick值")
-      .max(887272, "不能超过最大tick值"),
-    tickUpper: z
-      .number()
-      .int("必须为整数")
-      .min(-887272, "不能小于最小tick值")
-      .max(887272, "不能超过最大tick值"),
-    price: z
-      .number()
-      .min(0.000001, "价格不能低于0.000001")
-      .max(1000000, "价格不能超过1000000")
-      .multipleOf(0.000001, "最多支持6位小数"),
-  })
-  .refine((data) => data.token0.toLowerCase() < data.token1.toLowerCase(), {
-    message: "Token0地址必须按字母顺序排在Token1之前，请交换代币位置",
-    path: ["token1"],
-  })
+const formSchema = z.object({
+  tokenA: z
+    .string()
+    .min(42, "地址长度必须为42字符")
+    .max(42, "地址长度必须为42字符")
+    .regex(/^0x[a-fA-F0-9]{40}$/, "必须是有效的以太坊地址"),
+  tokenB: z
+    .string()
+    .min(42, "地址长度必须为42字符")
+    .max(42, "地址长度必须为42字符")
+    .regex(/^0x[a-fA-F0-9]{40}$/, "必须是有效的以太坊地址"),
+  fee: z.number().refine((val) => [3000, 500, 10000].includes(val), {
+    message: "请选择有效费率等级",
+  }),
+  priceLower: z
+    .number({ message: "最低价格不能为空" })
+    .min(0.000001, "最低价格不能低于0.000001"),
+  priceUpper: z
+    .number({ message: "最高价格不能为空" })
+    .max(Number.MAX_SAFE_INTEGER, `最高价格不能超过${Number.MAX_SAFE_INTEGER}`),
+  price: z
+    .number({ message: "价格不能为空" })
+    .min(0.000001, "价格不能低于0.000001")
+    .max(Number.MAX_SAFE_INTEGER, `价格不能超过${Number.MAX_SAFE_INTEGER}`)
+    .multipleOf(0.000001, "最多支持6位小数"),
+})
 
 export type PoolFormType = z.infer<typeof formSchema>
 
@@ -71,11 +66,11 @@ const PoolForm = React.forwardRef<
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      token0: getContractAddress("DebugTokenA"),
-      token1: getContractAddress("DebugTokenB"),
-      fee: 3000,
-      tickLower: -887272,
-      tickUpper: 887272,
+      tokenA: getContractAddress("DebugTokenA"),
+      tokenB: getContractAddress("DebugTokenB"),
+      fee: 500,
+      priceLower: 0.000001,
+      priceUpper: 1000000,
       price: 1,
     },
   })
@@ -90,41 +85,101 @@ const PoolForm = React.forwardRef<
     },
   }))
 
+  const { data: tokensInfo = {} } = useDebugTokensInfo()
+
+  const getFilteredTokens = React.useCallback(
+    (excludeAddress?: string) => {
+      return Object.values(tokensInfo).filter(
+        (token) => token.address !== excludeAddress
+      )
+    },
+    [tokensInfo]
+  )
+
   return (
     <Form {...form}>
       <form className="space-y-3" onSubmit={form.handleSubmit(handleSubmit)}>
-        <FormField
-          control={form.control}
-          name="token0"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Token 0</FormLabel>
-              <FormControl>
-                <Input {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="token1"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Token 1</FormLabel>
-              <FormControl>
-                <Input {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        <p className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+          请选择代币对
+        </p>
+        <div className="flex justify-between gap-2">
+          <FormField
+            control={form.control}
+            name="tokenA"
+            render={({ field }) => (
+              <FormItem className="flex-1 overflow-hidden">
+                <FormControl>
+                  <TokenSelectModal
+                    trigger={
+                      <div className="flex items-center w-full px-3 gap-1.5 border rounded-xl h-12 cursor-pointer text-muted-foreground active:scale-95 transition-all justify-between">
+                        <>
+                          {field.value ? (
+                            <div className="flex items-center gap-1 -ml-1.5 flex-1 overflow-hidden">
+                              <div className="size-7 bg-slate-400 rounded-full flex items-center justify-center">
+                                {tokensInfo[field.value]?.name?.slice(-1)}
+                              </div>
+                              <div className="text-muted-foreground truncate text-sm flex-1 text-left">
+                                {tokensInfo[field.value]?.name}
+                              </div>
+                            </div>
+                          ) : (
+                            <span className="font-semibold">选择代币</span>
+                          )}
+                          <ChevronDown />
+                        </>
+                      </div>
+                    }
+                    options={getFilteredTokens(form.getValues().tokenB)}
+                    onValueChange={(token) => field.onChange(token.address)}
+                    triggerWrapperClass="w-full"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="tokenB"
+            render={({ field }) => (
+              <FormItem className="flex-1 overflow-hidden">
+                <FormControl>
+                  <TokenSelectModal
+                    trigger={
+                      <div className="flex items-center w-full px-3 gap-1.5 border rounded-xl h-12 cursor-pointer text-muted-foreground active:scale-95 transition-all justify-between">
+                        <>
+                          {field.value ? (
+                            <div className="flex items-center gap-1 -ml-1.5 flex-1 overflow-hidden">
+                              <div className="size-7 bg-slate-400 rounded-full flex items-center justify-center">
+                                {tokensInfo[field.value]?.name?.slice(-1)}
+                              </div>
+                              <div className="text-muted-foreground truncate text-sm flex-1 text-left">
+                                {tokensInfo[field.value]?.name}
+                              </div>
+                            </div>
+                          ) : (
+                            <span className="font-semibold">选择代币</span>
+                          )}
+                          <ChevronDown />
+                        </>
+                      </div>
+                    }
+                    options={getFilteredTokens(form.getValues().tokenA)}
+                    onValueChange={(token) => field.onChange(token.address)}
+                    triggerWrapperClass="w-full"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
         <FormField
           control={form.control}
           name="fee"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Fee</FormLabel>
+              <FormLabel>手续费</FormLabel>
               <FormControl>
                 <Select
                   onValueChange={(val) => field.onChange(Number(val))}
@@ -134,8 +189,8 @@ const PoolForm = React.forwardRef<
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value={"3000"}>0.3%</SelectItem>
                     <SelectItem value={"500"}>0.05%</SelectItem>
+                    <SelectItem value={"3000"}>0.3%</SelectItem>
                     <SelectItem value={"10000"}>1%</SelectItem>
                   </SelectContent>
                 </Select>
@@ -144,71 +199,87 @@ const PoolForm = React.forwardRef<
             </FormItem>
           )}
         />
-        <FormField
-          control={form.control}
-          name="tickLower"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Tick Lower</FormLabel>
-              <FormControl>
-                <Input
-                  type="number"
-                  {...field}
-                  onChange={(e) => {
-                    // 使用 parseFloat 转换并处理空值情况
-                    const value =
-                      e.target.value === "" ? 0 : parseFloat(e.target.value)
-                    field.onChange(isNaN(value) ? 0 : value)
-                  }}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="tickUpper"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Tick Upper</FormLabel>
-              <FormControl>
-                <Input
-                  type="number"
-                  {...field}
-                  onChange={(e) => {
-                    // 使用 parseFloat 转换并处理空值情况
-                    const value =
-                      e.target.value === "" ? 0 : parseFloat(e.target.value)
-                    field.onChange(isNaN(value) ? 0 : value)
-                  }}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        <div className="flex justify-between gap-2">
+          <FormField
+            control={form.control}
+            name="priceLower"
+            render={({ field }) => (
+              <FormItem className="flex-1">
+                <FormLabel>最低价格</FormLabel>
+                <FormControl>
+                  <Input
+                    type="number"
+                    {...field}
+                    onChange={(e) => {
+                      const value = e.target.value
+                      field.onChange(value === "" ? "" : Number(value))
+                    }}
+                  />
+                </FormControl>
+                <FormMessage />
+                <FormDescription>在价格范围内参与市场交易</FormDescription>
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="priceUpper"
+            render={({ field }) => (
+              <FormItem className="flex-1">
+                <FormLabel>最高价格</FormLabel>
+                <FormControl>
+                  <Input
+                    type="number"
+                    {...field}
+                    onChange={(e) => {
+                      const value = e.target.value
+                      field.onChange(value === "" ? "" : Number(value))
+                    }}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
         <FormField
           control={form.control}
           name="price"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Init Price(token1/token0)</FormLabel>
-              <FormControl>
-                <Input
-                  type="number"
-                  {...field}
-                  onChange={(e) => {
-                    // 使用 parseFloat 转换并处理空值情况
-                    const value =
-                      e.target.value === "" ? 0 : parseFloat(e.target.value)
-                    field.onChange(isNaN(value) ? 0 : value)
-                  }}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
+          render={({ field }) => {
+            const { tokenA, tokenB } = form.getValues()
+            const [token0, token1] =
+              tokenA < tokenB ? [tokenA, tokenB] : [tokenB, tokenA]
+            const token0Symbol = tokensInfo[token0]?.symbol
+            const token1Symbol = tokensInfo[token1]?.symbol
+
+            return (
+              <FormItem>
+                <FormLabel>
+                  初始价格
+                  <span className="ml-2">
+                    ({token0Symbol}/{token1Symbol})
+                  </span>
+                </FormLabel>
+                <FormControl>
+                  <div className="flex w-full items-center space-x-2">
+                    <Input
+                      className="flex-1"
+                      type="number"
+                      {...field}
+                      onChange={(e) => {
+                        const value = e.target.value
+                        field.onChange(value === "" ? "" : Number(value))
+                      }}
+                    />
+                    <div className="whitespace-nowrap text-muted-foreground font-semibold text-sm">
+                      {token1Symbol} 每 {token0Symbol}
+                    </div>
+                  </div>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )
+          }}
         />
       </form>
     </Form>

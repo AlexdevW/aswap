@@ -5,7 +5,6 @@ import SwapCard from "./swap-card"
 import { Button } from "@workspace/ui/components/button"
 import { ArrowDown, Loader } from "lucide-react"
 import { Token } from "@/types/swap"
-import useTokenAddress from "@/hooks/use-token-address"
 import {
   swapRouterAbi,
   useReadIPoolManagerGetAllPools,
@@ -17,7 +16,6 @@ import {
 import {
   computeSqrtPriceLimitX96,
   getContractAddress,
-  getTokenInfo,
   parseAmountToBigInt,
   parseBigIntToAmount,
 } from "@/lib/utils"
@@ -25,6 +23,7 @@ import { uniq } from "lodash-es"
 import { useAccount, usePublicClient } from "wagmi"
 import { toast } from "@workspace/ui/components/sonner"
 import useTokenBalance from "@/hooks/use-token-balance"
+import useTokensInfo from "@/hooks/use-debug-token-info"
 
 export default function Swap() {
   const account = useAccount()
@@ -35,8 +34,8 @@ export default function Swap() {
   const [tokenA, setTokenA] = useState<Token>()
   const [tokenB, setTokenB] = useState<Token>()
   // 两个代币的地址
-  const tokenAddressA = useTokenAddress(tokenA)
-  const tokenAddressB = useTokenAddress(tokenB)
+  const tokenAddressA = tokenA?.address
+  const tokenAddressB = tokenB?.address
 
   // 按照地址大小排序
   const [token0, token1] =
@@ -53,22 +52,24 @@ export default function Swap() {
   const [amountA, setAmountA] = useState<number | undefined>()
   const [amountB, setAmountB] = useState<number | undefined>()
 
-  const tokenABalance = useTokenBalance(tokenA)
-  const tokenBBalance = useTokenBalance(tokenB)
+  const tokenABalance = useTokenBalance(tokenAddressA)
+  const tokenBBalance = useTokenBalance(tokenAddressB)
 
   // 获取所有的交易对
   const { data: pairs } = useReadPoolManagerGetPairs({
     address: getContractAddress("PoolManager"),
   })
 
+  const { data: tokensInfo } = useTokensInfo()
+
   useEffect(() => {
-    const options: Token[] = uniq(
-      pairs?.map((pair) => [pair.token0, pair.token1]).flat()
-    ).map(getTokenInfo)
-    setTokens(options)
-    // setTokenA(options[0])
-    // setTokenB(options[1])
-  }, [pairs])
+    if (tokensInfo !== undefined) {
+      const options: Token[] = uniq(
+        pairs?.map((pair) => [pair.token0, pair.token1]).flat()
+      ).map((token) => tokensInfo[token]!)
+      setTokens(options)
+    }
+  }, [pairs, tokensInfo])
 
   // 获取所有的交易池
   const { data: pools = [] } = useReadIPoolManagerGetAllPools({

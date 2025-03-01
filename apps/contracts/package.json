@@ -5,9 +5,10 @@
     "dev": "npm run build && npm run deploy",
     "node": "hardhat node",
     "build": "hardhat compile",
-    "deploy": "npm run deploy:Aswap && npm run deploy:DebugToken",
+    "deploy": "npm run deploy:Aswap && npm run deploy:DebugToken && npm run deploy:Multicall3",
     "deploy:DebugToken": "npx hardhat ignition deploy ./ignition/modules/DebugToken.ts --network localhost",
     "deploy:Aswap": "npx hardhat ignition deploy ./ignition/modules/Aswap.ts --network localhost",
+    "deploy:Multicall3": "npx hardhat ignition deploy ./ignition/modules/Multicall3.ts --network localhost",
     "verify": "npx hardhat verify",
     "coverage": "SOLIDITY_COVERAGE=true npx hardhat coverage",
     "test": "REPORT_GAS=true hardhat test"

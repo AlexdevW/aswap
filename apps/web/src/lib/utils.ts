@@ -1,8 +1,9 @@
 import { Token } from "@/types/swap"
 import { encodeSqrtRatioX96 } from "@uniswap/v3-sdk"
-import { hardhat, sepolia } from "viem/chains"
 import { TickMath } from "@uniswap/v3-sdk"
 import { maxBy, minBy } from "lodash-es"
+import BigNumber from "bignumber.js"
+import JSBI from "jsbi"
 
 export const shortenAddress = (address: string) => {
   if (!address) return ""
@@ -10,14 +11,40 @@ export const shortenAddress = (address: string) => {
 }
 
 export const parsePriceToSqrtPriceX96 = (price: number): bigint => {
-  return BigInt(encodeSqrtRatioX96(price * 1000000, 1000000).toString())
+  // 使用BigNumber处理高精度小数转换
+  const adjustedPrice = new BigNumber(price)
+    .multipliedBy(1e18)
+    .toFixed(0, BigNumber.ROUND_DOWN)
+  return BigInt(encodeSqrtRatioX96(adjustedPrice, 1e18).toString())
 }
 
-export const parseSqrtPriceX96ToPrice = (sqrtPriceX96: bigint): number => {
-  // 先计算 sqrtPriceX96 的平方
-  const Q192 = 2n ** 192n
-  const price = (sqrtPriceX96 * sqrtPriceX96 * 1000000n) / Q192
-  return Number(price) / 1000000
+export const parseSqrtPriceX96ToPrice = (sqrtPriceX96: bigint): string => {
+  const Q192 = new BigNumber(2).pow(192)
+  const sqrtBN = new BigNumber(sqrtPriceX96.toString())
+
+  // 使用BigNumber进行高精度计算
+  const numerator = sqrtBN.pow(2).multipliedBy(1e18)
+  const priceBN = numerator.dividedBy(Q192)
+
+  // 直接返回字符串保持完整精度
+  return priceBN.dividedBy(1e18).toFormat({
+    groupSeparator: "",
+    decimalSeparator: ".",
+  })
+}
+
+export const priceToTick = (price: number): number => {
+  if (price <= 0) throw new Error("Price must be positive")
+  // 使用Uniswap官方方法处理精度
+  const sqrtPriceX96 = parsePriceToSqrtPriceX96(price)
+  return TickMath.getTickAtSqrtRatio(JSBI.BigInt(sqrtPriceX96.toString()))
+}
+
+export const tickToPrice = (tick: number): string => {
+  // 使用Uniswap官方方法获取精确sqrtPrice
+  const sqrtPriceX96 = TickMath.getSqrtRatioAtTick(tick)
+  // 转换为精确价格
+  return parseSqrtPriceX96ToPrice(BigInt(sqrtPriceX96.toString()))
 }
 
 export const getContractAddress = (
@@ -28,6 +55,7 @@ export const getContractAddress = (
     | "DebugTokenA"
     | "DebugTokenB"
     | "DebugTokenC"
+    | "Multicall3"
 ): `0x${string}` => {
   const isProd = process.env.NODE_ENV === "production"
   if (contract === "PoolManager") {
@@ -60,120 +88,36 @@ export const getContractAddress = (
       ? "0x5FC8d32690cc91D4c39d9d3abcBD16989F875707"
       : "0x5FC8d32690cc91D4c39d9d3abcBD16989F875707"
   }
+  if (contract === "Multicall3") {
+    return isProd
+      ? "0xcA11bde05977b3631167028862bE2a173976CA11"
+      : "0x0165878A594ca255338adfa4d48449f69242Eb8F"
+  }
   throw new Error("Invalid contract")
 }
 
-const builtInTokens: Record<string, Token> = {
-  "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9": {
-    icon: null,
-    symbol: "DTA",
-    decimal: 18,
-    name: "DebugTokenA",
-    availableChains: [
-      {
-        chain: hardhat,
-        contract: "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9",
-      },
-    ],
-  },
-  "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9": {
-    icon: null,
-    symbol: "DTB",
-    decimal: 18,
-    name: "DebugTokenB",
-    availableChains: [
-      {
-        chain: hardhat,
-        contract: "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9",
-      },
-    ],
-  },
-  "0x5FC8d32690cc91D4c39d9d3abcBD16989F875707": {
-    icon: null,
-    symbol: "DTC",
-    decimal: 18,
-    name: "DebugTokenC",
-    availableChains: [
-      {
-        chain: hardhat,
-        contract: "0x5FC8d32690cc91D4c39d9d3abcBD16989F875707",
-      },
-    ],
-  },
-  "0x5AAB2806D12E380c24C640a8Cd94906d7fA59b16": {
-    icon: null,
-    symbol: "DTA",
-    decimal: 18,
-    name: "DebugTokenA",
-    availableChains: [
-      {
-        chain: sepolia,
-        contract: "0x5AAB2806D12E380c24C640a8Cd94906d7fA59b16",
-      },
-    ],
-  },
-  "0x00E6EC12a0Fc35d7064cD0d551Ac74A02bA8a5A5": {
-    icon: null,
-    symbol: "DTB",
-    decimal: 18,
-    name: "DebugTokenB",
-    availableChains: [
-      {
-        chain: sepolia,
-        contract: "0x00E6EC12a0Fc35d7064cD0d551Ac74A02bA8a5A5",
-      },
-    ],
-  },
-  "0x1D46AD43cc80BFb66C1D574d2B0E4abab191d1E0": {
-    icon: null,
-    symbol: "DTC",
-    decimal: 18,
-    name: "DebugTokenC",
-    availableChains: [
-      {
-        chain: sepolia,
-        contract: "0x1D46AD43cc80BFb66C1D574d2B0E4abab191d1E0",
-      },
-    ],
-  },
-}
-
-export const getTokenInfo = (address: string): Token => {
-  if (builtInTokens[address]) {
-    return builtInTokens[address]
-  }
-  return {
-    icon: null,
-    symbol: address.slice(-3).toUpperCase(),
-    decimal: 18,
-    name: address,
-    availableChains: [
-      {
-        chain: hardhat,
-        contract: address,
-      },
-      {
-        chain: sepolia,
-        contract: address,
-      },
-    ],
-  }
-}
-
-// 把数字转化为大整数，支持 4 位小数
+// 改进后的金额转换方法（处理浮点精度）
 export const parseAmountToBigInt = (amount: number, token?: Token): bigint => {
-  return (
-    BigInt(Math.floor(amount * 10000)) *
-    BigInt(10 ** ((token?.decimal || 18) - 4))
-  )
+  // 处理小数精度：先四舍五入到4位小数
+  const rounded = Number(amount.toFixed(4))
+  // 使用字符串操作避免浮点问题
+  const [intPart, decimalPart = ""] = rounded.toString().split(".")
+  const paddedDecimal = decimalPart.padEnd(4, "0").slice(0, 4)
+  const totalUnits = BigInt(intPart + paddedDecimal)
+
+  return totalUnits * BigInt(10 ** ((token?.decimals || 18) - 4))
 }
 
-// 把大整数转化为数字，支持 4 位小数
+// 改进后的逆向转换
 export const parseBigIntToAmount = (amount: bigint, token?: Token): number => {
-  return (
-    Number((amount / BigInt(10 ** ((token?.decimal || 18) - 4))).toString()) /
-    10000
-  )
+  const divisor = BigInt(10 ** ((token?.decimals || 18) - 4))
+  const totalUnits = amount / divisor
+  const str = totalUnits.toString().padStart(5, "0") // 确保至少有4位小数
+
+  const integerPart = str.slice(0, -4) || "0"
+  const decimalPart = str.slice(-4).replace(/0+$/, "")
+
+  return Number(`${integerPart}.${decimalPart.padEnd(4, "0")}`)
 }
 
 export const computeSqrtPriceLimitX96 = (
@@ -206,4 +150,14 @@ export const computeSqrtPriceLimitX96 = (
     const limitTick = Math.min(maxTick + 10000, TickMath.MAX_TICK)
     return BigInt(TickMath.getSqrtRatioAtTick(limitTick).toString())
   }
+}
+
+// 新增辅助函数处理极大数值
+const safeConversion = (value: bigint) => {
+  const str = value.toString()
+  if (str.length <= 18) return Number(`0.${str.padStart(18, "0")}`)
+
+  const integer = str.slice(0, -18)
+  const decimal = str.slice(-18).replace(/0+$/, "")
+  return decimal ? Number(`${integer}.${decimal}`) : Number(integer)
 }

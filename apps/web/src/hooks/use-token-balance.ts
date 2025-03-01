@@ -1,11 +1,8 @@
-import { Token } from "@/types/swap"
 import { useAccount } from "wagmi"
-import useTokenAddress from "./use-token-address"
 import { useReadErc20BalanceOf } from "@/lib/contracts"
 
-export default function useTokenBalance(token?: Token) {
+export default function useTokenBalance(tokenAddress?: `0x${string}`) {
   const { address } = useAccount()
-  const tokenAddress = useTokenAddress(token)
   const { data: balance } = useReadErc20BalanceOf({
     address: tokenAddress,
     args: [address as `0x${string}`],

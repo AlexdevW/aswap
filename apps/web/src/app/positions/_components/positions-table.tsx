@@ -11,9 +11,9 @@ import {
 } from "@/lib/contracts"
 import { getContractAddress } from "@/lib/utils"
 import { DataTableToolbar } from "@workspace/ui/components/data-table/data-table-toolbar"
-import { PoolTableToolbarActions } from "./positions-table-toolbar-actions"
 import { Positions } from "@/types/positions"
 import { useAccount } from "wagmi"
+import useDebugTokensInfo from "@/hooks/use-debug-token-info"
 
 export default function PositionsTable() {
   const account = useAccount()
@@ -24,6 +24,7 @@ export default function PositionsTable() {
     useWritePositionManagerBurn()
   const { writeContractAsync: writePositionManagerCollect } =
     useWritePositionManagerCollect()
+  const { data: tokensInfo } = useDebugTokensInfo()
 
   const columns = React.useMemo(
     () =>
@@ -32,8 +33,15 @@ export default function PositionsTable() {
         refetch,
         writePositionManagerBurn,
         writePositionManagerCollect,
+        tokensInfo,
       }),
-    [account, refetch, writePositionManagerBurn, writePositionManagerCollect]
+    [
+      account,
+      refetch,
+      writePositionManagerBurn,
+      writePositionManagerCollect,
+      tokensInfo,
+    ]
   )
 
   const { table } = useDataTable({
@@ -51,9 +59,7 @@ export default function PositionsTable() {
 
   return (
     <DataTable table={table}>
-      <DataTableToolbar table={table}>
-        <PoolTableToolbarActions table={table} refetch={refetch} />
-      </DataTableToolbar>
+      <DataTableToolbar table={table}></DataTableToolbar>
     </DataTable>
   )
 }

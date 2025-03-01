@@ -1,12 +1,13 @@
-import { Chain } from "viem"
+// import { Chain } from "viem"
 
 export type Token = {
   name: string
   symbol: string
-  icon: React.ReactNode
-  decimal: number
-  availableChains: {
-    chain: Chain
-    contract?: string
-  }[]
+  icon: string
+  decimals: number
+  address: `0x${string}`
+  // availableChains: {
+  //   chain: Chain
+  //   contract?: string
+  // }[]
 }

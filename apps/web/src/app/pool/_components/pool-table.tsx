@@ -9,27 +9,28 @@ import { useReadPoolManagerGetAllPools } from "@/lib/contracts"
 import { getContractAddress } from "@/lib/utils"
 import { DataTableToolbar } from "@workspace/ui/components/data-table/data-table-toolbar"
 import { PoolTableToolbarActions } from "./pool-table-toolbar-actions"
+import useDebugTokensInfo from "@/hooks/use-debug-token-info"
 
 export default function PoolTable() {
-  const columns = React.useMemo(() => getColumns(), [])
+  const { data: tokensInfo } = useDebugTokensInfo()
   const { data = [], refetch } = useReadPoolManagerGetAllPools({
     address: getContractAddress("PoolManager"),
   })
-  console.log(data, "data")
+  const columns = React.useMemo(
+    () => getColumns(tokensInfo, refetch),
+    [tokensInfo, refetch]
+  )
+
   const { table } = useDataTable({
     data: data as Pool[],
     columns,
     pageCount: Math.ceil(data.length / 10),
     enableColumnResizing: true,
-    // enableAdvancedFilter: enableAdvancedTable,
     initialState: {
-      //   sorting: [{ id: "amount", desc: true }],
-      columnPinning: { right: ["sqrtPriceX96"], left: ["select", "pool"] },
+      columnPinning: { left: ["pool"] },
     },
     getRowId: (originalRow: Pool) =>
       `${originalRow.index}${originalRow.token0}${originalRow.token1}`,
-    // shallow: false,
-    // clearOnDefault: true,
   })
 
   return (

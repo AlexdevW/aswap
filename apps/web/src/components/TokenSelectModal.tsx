@@ -8,21 +8,26 @@ import {
   DialogTrigger,
 } from "@workspace/ui/components/dialog"
 import { Input } from "@workspace/ui/components/input"
+import { cn } from "@workspace/ui/lib/utils"
 import { Search } from "lucide-react"
 import React, { useState } from "react"
 
 function Balance({ token }: { token?: Token }) {
-  return useTokenBalance(token)
+  return useTokenBalance(token?.address)
 }
 
 export default function TokenSelectModal({
   trigger,
   options,
+  disabled,
   onValueChange,
+  triggerWrapperClass,
 }: {
   trigger: React.ReactNode
   options: Token[]
+  disabled?: boolean
   onValueChange: (token: Token) => void
+  triggerWrapperClass?: string
 }) {
   const [open, setOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState("")
@@ -44,7 +49,12 @@ export default function TokenSelectModal({
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger>{trigger}</DialogTrigger>
+      <DialogTrigger
+        disabled={disabled}
+        className={cn("whitespace-nowrap", triggerWrapperClass)}
+      >
+        {trigger}
+      </DialogTrigger>
       <DialogContent className="px-0 max-w-[400px] w-[calc(100vw-30px)] !rounded-3xl bg-white">
         <DialogHeader className="px-6">
           <DialogTitle>选择代币</DialogTitle>
@@ -71,7 +81,7 @@ export default function TokenSelectModal({
               >
                 <div className="flex gap-3 items-center">
                   <div className="size-10 bg-slate-400 rounded-full flex items-center justify-center">
-                    {token.symbol.slice(-1)}
+                    {token.symbol?.slice(-1)}
                   </div>
                   <div>
                     <div className="font-medium">{token.name}</div>
@@ -90,7 +100,9 @@ export default function TokenSelectModal({
           })}
         </ul>
         {options.length <= 0 && (
-          <div>当前没有可选的代币， 请在交易界面领取测试代币</div>
+          <div className="px-5">
+            当前没有可选的代币， 请在交易界面领取测试代币
+          </div>
         )}
       </DialogContent>
     </Dialog>

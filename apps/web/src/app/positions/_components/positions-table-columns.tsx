@@ -12,6 +12,8 @@ import {
   useWritePositionManagerBurn,
 } from "@/lib/contracts"
 import { Button } from "@workspace/ui/components/button"
+import { DataTableColumnHeader } from "@workspace/ui/components/data-table/data-table-column-header"
+import { Token } from "@/types/swap"
 
 type WriteCollectType = ReturnType<
   typeof useWritePositionManagerCollect
@@ -26,6 +28,7 @@ type GetColumnsType = {
   refetch: QueryObserverBaseResult["refetch"]
   writePositionManagerBurn: WriteBurnType
   writePositionManagerCollect: WriteCollectType
+  tokensInfo?: Record<string, Token>
 }
 
 export function getColumns({
@@ -33,6 +36,7 @@ export function getColumns({
   refetch,
   writePositionManagerBurn,
   writePositionManagerCollect,
+  tokensInfo = {},
 }: GetColumnsType): ColumnDef<Positions>[] {
   return [
     {
@@ -46,27 +50,53 @@ export function getColumns({
       enableSorting: false,
       cell: ({ row }) => <div>{shortenAddress(row.original.owner)}</div>,
     },
+    // {
+    //   accessorKey: "token0",
+    //   header: () => <div className="whitespace-nowrap">Token 0</div>,
+    //   enableSorting: false,
+    //   enableHiding: false,
+    //   cell: ({ row }) => <div>{shortenAddress(row.original.token0)}</div>,
+    // },
+    // {
+    //   accessorKey: "token1",
+    //   header: () => <div className="whitespace-nowrap">Token 1</div>,
+    //   enableSorting: false,
+    //   enableHiding: false,
+    //   cell: ({ row }) => <div>{shortenAddress(row.original.token1)}</div>,
+    // },
     {
-      accessorKey: "token0",
-      header: () => <div className="whitespace-nowrap">Token 0</div>,
+      accessorKey: "pool",
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Pool" />
+      ),
+      cell: ({ row }) => {
+        const token0Symbol =
+          tokensInfo[row.original.token0]?.symbol || "Unknown"
+        const token1Symbol =
+          tokensInfo[row.original.token1]?.symbol || "Unknown"
+        // const version = `v${row.original.version || '3'}`
+        // const fee = `${(row.original.fee / 10000).toFixed(2)}%`
+
+        return (
+          <div className="flex items-center gap-2">
+            <div className="flex items-center">
+              <span>{`${token0Symbol}/${token1Symbol}`}</span>
+            </div>
+          </div>
+        )
+      },
       enableSorting: false,
       enableHiding: false,
-      cell: ({ row }) => <div>{shortenAddress(row.original.token0)}</div>,
-    },
-    {
-      accessorKey: "token1",
-      header: () => <div className="whitespace-nowrap">Token 1</div>,
-      enableSorting: false,
-      enableHiding: false,
-      cell: ({ row }) => <div>{shortenAddress(row.original.token1)}</div>,
-    },
-    {
-      accessorKey: "index",
-      header: "Index",
     },
     {
       accessorKey: "fee",
       header: "Fee",
+      enableSorting: true,
+      cell: ({ row }) => `${row.original.fee / 10000}%`,
+    },
+    {
+      accessorKey: "index",
+      header: "Index",
     },
     {
       accessorKey: "liquidity",

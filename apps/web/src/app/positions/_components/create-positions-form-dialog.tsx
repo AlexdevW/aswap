@@ -31,16 +31,19 @@ import {
   useWritePositionManagerMint,
 } from "@/lib/contracts"
 import { useAccount, usePublicClient } from "wagmi"
+import { parseEther } from "viem"
 
 interface CreatePositionsDialogProps
   extends React.ComponentPropsWithoutRef<typeof Dialog> {
   showTrigger?: boolean
   onSuccess?: () => void
+  defaultValues?: PositionsFormType
 }
 
 export function CreatePositionsDialog({
   showTrigger = true,
   onSuccess,
+  defaultValues,
   ...props
 }: CreatePositionsDialogProps) {
   const [open, setOpen] = React.useState(false)
@@ -92,29 +95,37 @@ export function CreatePositionsDialog({
   }
 
   function onSubmit(createParams: PositionsFormType) {
-    const token0 = createParams.token0 as `0x${string}`
-    const token1 = createParams.token1 as `0x${string}`
-    const amount0Desired = BigInt(createParams.amount0Desired)
-    const amount1Desired = BigInt(createParams.amount1Desired)
+    const tokenA = createParams.tokenA as `0x${string}`
+    const tokenB = createParams.tokenB as `0x${string}`
+    const [token0, token1] =
+      tokenA < tokenB ? [tokenA, tokenB] : [tokenB, tokenA]
+
     startCreateTransition(async () => {
       if (account?.address === undefined) {
         toast.error("Please connect wallet first")
         return
       }
       try {
+        const amount0Desired = parseEther(createParams.amount0Desired)
+        const amount1Desired = parseEther(createParams.amount1Desired)
+        console.log(
+          amount0Desired,
+          amount1Desired,
+          "amount0Desired, amount1Desired",
+          createParams.amount0Desired
+        )
         // 检查两个代币的授权
         await checkAndApprove(token0, amount0Desired)
         await checkAndApprove(token1, amount1Desired)
-
         await writeContractAsync({
           address: getContractAddress("PositionManager"),
           args: [
             {
               token0,
               token1,
-              index: createParams.index,
-              amount0Desired: amount0Desired,
-              amount1Desired: amount1Desired,
+              index: createParams?.index,
+              amount0Desired,
+              amount1Desired,
               recipient: account?.address as `0x${string}`,
               deadline: BigInt(Date.now() + 100000),
             },
@@ -142,15 +153,19 @@ export function CreatePositionsDialog({
           <DialogTrigger asChild>
             <Button variant="outline" size="sm">
               <PlusIcon className="size-4" aria-hidden="true" />
-              New
+              添加头寸
             </Button>
           </DialogTrigger>
         ) : null}
-        <DialogContent>
+        <DialogContent className="bg-white !rounded-3xl">
           <DialogHeader>
             <DialogTitle>Create Positions</DialogTitle>
           </DialogHeader>
-          <PositionsForm ref={formRef} onSubmit={onSubmit} />
+          <PositionsForm
+            ref={formRef}
+            onSubmit={onSubmit}
+            defaultValues={defaultValues}
+          />
           <DialogFooter className="gap-2 sm:space-x-0">
             <DialogClose asChild>
               <Button variant="outline">Cancel</Button>
@@ -180,7 +195,7 @@ export function CreatePositionsDialog({
         <DrawerTrigger asChild>
           <Button variant="outline" size="sm">
             <PlusIcon className="size-4" aria-hidden="true" />
-            New
+            添加流动性
           </Button>
         </DrawerTrigger>
       ) : null}
@@ -189,7 +204,11 @@ export function CreatePositionsDialog({
           <DrawerTitle>Create Positions</DrawerTitle>
         </DrawerHeader>
         <div className="px-5">
-          <PositionsForm ref={formRef} onSubmit={onSubmit} />
+          <PositionsForm
+            ref={formRef}
+            onSubmit={onSubmit}
+            defaultValues={defaultValues}
+          />
         </div>
         <DrawerFooter className="gap-2 sm:space-x-0">
           <DrawerClose asChild>

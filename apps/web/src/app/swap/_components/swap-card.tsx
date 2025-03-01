@@ -46,7 +46,7 @@ export default function SwapCard({
         <Input
           type="number"
           className={cn(
-            "flex-1 text-xl !border-none shadow-none ring-0  focus-visible:ring-0 px-0",
+            "block overflow-hidden text-xl !border-none shadow-none ring-0 focus-visible:ring-0 px-0",
             {
               "text-red-400": isInsufficientBalance,
             }
@@ -62,7 +62,7 @@ export default function SwapCard({
                 {token ? (
                   <div className="flex items-center gap-1 -ml-1.5">
                     <div className="size-7 bg-slate-400 rounded-full flex items-center justify-center">
-                      {token.symbol.slice(-1)}
+                      {token.symbol?.slice(-1)}
                     </div>
                     <div className="text-muted-foreground text-sm">
                       {token.symbol}
