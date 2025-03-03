@@ -27,7 +27,7 @@ export default function PoolTable() {
     pageCount: Math.ceil(data.length / 10),
     enableColumnResizing: true,
     initialState: {
-      columnPinning: { left: ["pool"] },
+      columnPinning: { left: ["pool"], right: ["actions"] },
     },
     getRowId: (originalRow: Pool) =>
       `${originalRow.index}${originalRow.token0}${originalRow.token1}`,

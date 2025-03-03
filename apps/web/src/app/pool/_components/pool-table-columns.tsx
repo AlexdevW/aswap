@@ -116,7 +116,7 @@ export function getColumns(
       cell: ({ row }) => row.original.liquidity.toString(),
     },
     {
-      accessorKey: "Actions",
+      accessorKey: "actions",
       header: "Actions",
       cell: ({ row }) => (
         <div>
