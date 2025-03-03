@@ -13,7 +13,7 @@ import {
   FormMessage,
 } from "@workspace/ui/components/form"
 import { Input } from "@workspace/ui/components/input"
-import TokenSelectModal from "@/components/token-select-modal"
+import TokenSelect from "@/components/token-select"
 import useDebugTokensInfo from "@/hooks/use-debug-token-info"
 import { Button } from "@workspace/ui/components/button"
 import { isUndefined } from "lodash-es"
@@ -105,6 +105,27 @@ const TokenInput = ({
   )
 }
 
+const TokenSelectTrigger = ({
+  field,
+  tokensInfo,
+}: {
+  field: ControllerRenderProps<PositionsFormType>
+  tokensInfo: Record<string, Token>
+}) => {
+  return (
+    <div className="flex items-center w-full px-3 gap-1.5 border rounded-xl h-12 text-muted-foreground transition-all justify-between">
+      <div className="flex items-center gap-1 -ml-1.5 flex-1 overflow-hidden">
+        <div className="size-7 bg-slate-400 rounded-full flex items-center justify-center">
+          {tokensInfo[field.value]?.name?.slice(-1)}
+        </div>
+        <div className="text-muted-foreground truncate text-sm flex-1 text-left">
+          {tokensInfo[field.value]?.name}
+        </div>
+      </div>
+    </div>
+  )
+}
+
 const PositionsForm = React.forwardRef<
   { submit: () => Promise<void> },
   PositionsFormProps
@@ -161,19 +182,13 @@ const PositionsForm = React.forwardRef<
             render={({ field }) => (
               <FormItem className="flex-1 overflow-hidden">
                 <FormControl>
-                  <TokenSelectModal
+                  <TokenSelect
                     disabled
                     trigger={
-                      <div className="flex items-center w-full px-3 gap-1.5 border rounded-xl h-12 text-muted-foreground transition-all justify-between">
-                        <div className="flex items-center gap-1 -ml-1.5 flex-1 overflow-hidden">
-                          <div className="size-7 bg-slate-400 rounded-full flex items-center justify-center">
-                            {tokensInfo[field.value]?.name?.slice(-1)}
-                          </div>
-                          <div className="text-muted-foreground truncate text-sm flex-1 text-left">
-                            {tokensInfo[field.value]?.name}
-                          </div>
-                        </div>
-                      </div>
+                      <TokenSelectTrigger
+                        field={field}
+                        tokensInfo={tokensInfo}
+                      />
                     }
                     options={getFilteredTokens(tokenAAddress)}
                     onValueChange={(token) => field.onChange(token.address)}
@@ -190,19 +205,13 @@ const PositionsForm = React.forwardRef<
             render={({ field }) => (
               <FormItem className="flex-1 overflow-hidden">
                 <FormControl>
-                  <TokenSelectModal
+                  <TokenSelect
                     disabled
                     trigger={
-                      <div className="flex items-center w-full px-3 gap-1.5 border rounded-xl h-12 text-muted-foreground transition-all justify-between">
-                        <div className="flex items-center gap-1 -ml-1.5 flex-1 overflow-hidden">
-                          <div className="size-7 bg-slate-400 rounded-full flex items-center justify-center">
-                            {tokensInfo[field.value]?.name?.slice(-1)}
-                          </div>
-                          <div className="text-muted-foreground truncate text-sm flex-1 text-left">
-                            {tokensInfo[field.value]?.name}
-                          </div>
-                        </div>
-                      </div>
+                      <TokenSelectTrigger
+                        field={field}
+                        tokensInfo={tokensInfo}
+                      />
                     }
                     options={getFilteredTokens(tokenAAddress)}
                     onValueChange={(token) => field.onChange(token.address)}

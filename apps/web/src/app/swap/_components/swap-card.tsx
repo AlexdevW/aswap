@@ -10,7 +10,7 @@ import { Button } from "@workspace/ui/components/button"
 import { Input } from "@workspace/ui/components/input"
 import { Token } from "@/types/swap"
 import { ChevronDown } from "lucide-react"
-import TokenSelectModal from "@/components/token-select-modal"
+import TokenSelect from "@/components/token-select"
 import { isUndefined } from "lodash-es"
 import { cn } from "@workspace/ui/lib/utils"
 
@@ -55,7 +55,7 @@ export default function SwapCard({
           value={amount ?? ""}
           onChange={(e) => onAmountChange(e.target.value)}
         />
-        <TokenSelectModal
+        <TokenSelect
           trigger={
             <div className="flex items-center bg-white max-w-48 px-3 gap-1.5 shadow-sm rounded-3xl h-9 cursor-pointer text-muted-foreground active:scale-95 transition-all">
               <>

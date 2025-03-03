@@ -1,7 +1,7 @@
 "use client"
 
 import React from "react"
-import { useForm } from "react-hook-form"
+import { ControllerRenderProps, useForm } from "react-hook-form"
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import {
@@ -22,9 +22,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@workspace/ui/components/select"
-import TokenSelectModal from "@/components/token-select-modal"
+import TokenSelect from "@/components/token-select"
 import { ChevronDown } from "lucide-react"
 import useDebugTokensInfo from "@/hooks/use-debug-token-info"
+import { Token } from "@/types/swap"
 
 const formSchema = z.object({
   tokenA: z
@@ -58,6 +59,30 @@ export type PoolFormType = z.infer<typeof formSchema>
 interface PoolFormProps {
   onSubmit?: (values: z.infer<typeof formSchema>) => void
 }
+
+const TokenSelectTrigger = ({
+  field,
+  tokensInfo,
+}: {
+  field: ControllerRenderProps<PoolFormType>
+  tokensInfo: Record<string, Token>
+}) => (
+  <div className="flex items-center w-full px-3 gap-1.5 border rounded-xl h-12 cursor-pointer text-muted-foreground active:scale-95 transition-all justify-between">
+    {field.value ? (
+      <div className="flex items-center gap-1 -ml-1.5 flex-1 overflow-hidden">
+        <div className="size-7 bg-slate-400 rounded-full flex items-center justify-center">
+          {tokensInfo[field.value]?.name?.slice(-1)}
+        </div>
+        <div className="text-muted-foreground truncate text-sm flex-1 text-left">
+          {tokensInfo[field.value]?.name}
+        </div>
+      </div>
+    ) : (
+      <span className="font-semibold">选择代币</span>
+    )}
+    <ChevronDown />
+  </div>
+)
 
 const PoolForm = React.forwardRef<
   { submit: () => Promise<void> },
@@ -109,25 +134,12 @@ const PoolForm = React.forwardRef<
             render={({ field }) => (
               <FormItem className="flex-1 overflow-hidden">
                 <FormControl>
-                  <TokenSelectModal
+                  <TokenSelect
                     trigger={
-                      <div className="flex items-center w-full px-3 gap-1.5 border rounded-xl h-12 cursor-pointer text-muted-foreground active:scale-95 transition-all justify-between">
-                        <>
-                          {field.value ? (
-                            <div className="flex items-center gap-1 -ml-1.5 flex-1 overflow-hidden">
-                              <div className="size-7 bg-slate-400 rounded-full flex items-center justify-center">
-                                {tokensInfo[field.value]?.name?.slice(-1)}
-                              </div>
-                              <div className="text-muted-foreground truncate text-sm flex-1 text-left">
-                                {tokensInfo[field.value]?.name}
-                              </div>
-                            </div>
-                          ) : (
-                            <span className="font-semibold">选择代币</span>
-                          )}
-                          <ChevronDown />
-                        </>
-                      </div>
+                      <TokenSelectTrigger
+                        field={field}
+                        tokensInfo={tokensInfo}
+                      />
                     }
                     options={getFilteredTokens(form.getValues().tokenB)}
                     onValueChange={(token) => field.onChange(token.address)}
@@ -144,25 +156,12 @@ const PoolForm = React.forwardRef<
             render={({ field }) => (
               <FormItem className="flex-1 overflow-hidden">
                 <FormControl>
-                  <TokenSelectModal
+                  <TokenSelect
                     trigger={
-                      <div className="flex items-center w-full px-3 gap-1.5 border rounded-xl h-12 cursor-pointer text-muted-foreground active:scale-95 transition-all justify-between">
-                        <>
-                          {field.value ? (
-                            <div className="flex items-center gap-1 -ml-1.5 flex-1 overflow-hidden">
-                              <div className="size-7 bg-slate-400 rounded-full flex items-center justify-center">
-                                {tokensInfo[field.value]?.name?.slice(-1)}
-                              </div>
-                              <div className="text-muted-foreground truncate text-sm flex-1 text-left">
-                                {tokensInfo[field.value]?.name}
-                              </div>
-                            </div>
-                          ) : (
-                            <span className="font-semibold">选择代币</span>
-                          )}
-                          <ChevronDown />
-                        </>
-                      </div>
+                      <TokenSelectTrigger
+                        field={field}
+                        tokensInfo={tokensInfo}
+                      />
                     }
                     options={getFilteredTokens(form.getValues().tokenA)}
                     onValueChange={(token) => field.onChange(token.address)}

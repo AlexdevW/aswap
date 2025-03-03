@@ -16,7 +16,7 @@ function Balance({ token }: { token?: Token }) {
   return useTokenBalance(token?.address)
 }
 
-export default function TokenSelectModal({
+export default function TokenSelect({
   trigger,
   options,
   disabled,
