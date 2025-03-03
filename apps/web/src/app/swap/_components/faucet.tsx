@@ -62,7 +62,7 @@ export default function Faucet() {
           variant="outline"
           size="sm"
           className="bg-white border-none rounded-full active:scale-95"
-          onClick={() => claim(getContractAddress("DebugTokenB"), "DTB")}
+          onClick={() => claim(getContractAddress("DebugTokenC"), "DTC")}
         >
           DTC
         </Button>

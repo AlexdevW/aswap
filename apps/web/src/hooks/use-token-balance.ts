@@ -1,7 +1,12 @@
 import { useAccount } from "wagmi"
 import { useReadErc20BalanceOf } from "@/lib/contracts"
+import { formatEther } from "viem"
+import BigNumber from "bignumber.js"
 
-export default function useTokenBalance(tokenAddress?: `0x${string}`) {
+export default function useTokenBalance(
+  tokenAddress?: `0x${string}`,
+  decimals: number = 8
+) {
   const { address } = useAccount()
   const { data: balance } = useReadErc20BalanceOf({
     address: tokenAddress,
@@ -13,5 +18,9 @@ export default function useTokenBalance(tokenAddress?: `0x${string}`) {
     },
   })
 
-  return balance === undefined ? balance : Number(balance) / 10 ** 18
+  return balance === undefined
+    ? balance
+    : new BigNumber(formatEther(balance))
+        .decimalPlaces(decimals, BigNumber.ROUND_FLOOR)
+        .toNumber()
 }
