@@ -4,6 +4,7 @@ import { TickMath } from "@uniswap/v3-sdk"
 import { maxBy, minBy } from "lodash-es"
 import BigNumber from "bignumber.js"
 import JSBI from "jsbi"
+import { IS_PROD as isProd } from "@/constants"
 
 export const shortenAddress = (address: string) => {
   if (!address) return ""
@@ -57,7 +58,6 @@ export const getContractAddress = (
     | "DebugTokenC"
     | "Multicall3"
 ): `0x${string}` => {
-  const isProd = process.env.NODE_ENV === "production"
   if (contract === "PoolManager") {
     return isProd
       ? "0x5FbDB2315678afecb367f032d93F642f64180aa3"
@@ -150,14 +150,4 @@ export const computeSqrtPriceLimitX96 = (
     const limitTick = Math.min(maxTick + 10000, TickMath.MAX_TICK)
     return BigInt(TickMath.getSqrtRatioAtTick(limitTick).toString())
   }
-}
-
-// 新增辅助函数处理极大数值
-const safeConversion = (value: bigint) => {
-  const str = value.toString()
-  if (str.length <= 18) return Number(`0.${str.padStart(18, "0")}`)
-
-  const integer = str.slice(0, -18)
-  const decimal = str.slice(-18).replace(/0+$/, "")
-  return decimal ? Number(`${integer}.${decimal}`) : Number(integer)
 }
