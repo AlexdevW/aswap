@@ -22,7 +22,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@workspace/ui/components/select"
-import TokenSelectModal from "@/components/TokenSelectModal"
+import TokenSelectModal from "@/components/token-select-modal"
 import { ChevronDown } from "lucide-react"
 import useDebugTokensInfo from "@/hooks/use-debug-token-info"
 

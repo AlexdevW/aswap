@@ -10,7 +10,7 @@ import { Button } from "@workspace/ui/components/button"
 import { Input } from "@workspace/ui/components/input"
 import { Token } from "@/types/swap"
 import { ChevronDown } from "lucide-react"
-import TokenSelectModal from "@/components/TokenSelectModal"
+import TokenSelectModal from "@/components/token-select-modal"
 import { isUndefined } from "lodash-es"
 import { cn } from "@workspace/ui/lib/utils"
 

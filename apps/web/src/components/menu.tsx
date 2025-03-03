@@ -1,6 +1,6 @@
 "use client"
 import React from "react"
-import LinkComponent from "./LinkComponent"
+import LinkComponent from "./link-component"
 import { usePathname } from "next/navigation"
 import { cn } from "@workspace/ui/lib/utils"
 export default function Menu() {

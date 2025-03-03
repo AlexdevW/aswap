@@ -13,7 +13,7 @@ import {
   FormMessage,
 } from "@workspace/ui/components/form"
 import { Input } from "@workspace/ui/components/input"
-import TokenSelectModal from "@/components/TokenSelectModal"
+import TokenSelectModal from "@/components/token-select-modal"
 import useDebugTokensInfo from "@/hooks/use-debug-token-info"
 import { Button } from "@workspace/ui/components/button"
 import { isUndefined } from "lodash-es"

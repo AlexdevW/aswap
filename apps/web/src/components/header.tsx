@@ -1,7 +1,7 @@
 import React from "react"
-import LinkComponent from "./LinkComponent"
-import Menu from "./Menu"
-import { Connect } from "./Connect"
+import LinkComponent from "./link-component"
+import Menu from "./menu"
+import { Connect } from "./connect"
 import Image from "next/image"
 import Logo from "@/assets/icons/logo.png"
 
