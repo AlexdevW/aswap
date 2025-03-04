@@ -16,10 +16,10 @@ import { Input } from "@workspace/ui/components/input"
 import TokenSelect from "@/components/token-select"
 import useDebugTokensInfo from "@/hooks/use-debug-token-info"
 import { Button } from "@workspace/ui/components/button"
-import { isUndefined } from "lodash-es"
 import { Token } from "@/types/swap"
 import useTokenBalance from "@/hooks/use-token-balance"
 import { cn } from "@workspace/ui/lib/utils"
+import { parseAmountToBigInt } from "@/lib/utils"
 
 const formSchema = z.object({
   tokenA: z
@@ -33,8 +33,8 @@ const formSchema = z.object({
     .max(42, "地址长度必须为42字符")
     .regex(/^0x[a-fA-F0-9]{40}$/, "必须是有效的以太坊地址"),
   index: z.number().int().min(0, "索引不能小于0"),
-  amount0Desired: z.string().min(1, "不能为空"),
-  amount1Desired: z.string().min(1, "不能为空"),
+  amount0Desired: z.string().min(1, "请输入存入代币数量"),
+  amount1Desired: z.string().min(1, "请输入存入代币数量"),
 })
 
 export type PositionsFormType = z.infer<typeof formSchema>
@@ -52,7 +52,7 @@ const TokenInput = ({
 }: {
   field: ControllerRenderProps<PositionsFormType>
   token?: Token
-  balance?: number
+  balance?: string
   isInsufficientBalance?: boolean
 }) => {
   return (
@@ -68,6 +68,17 @@ const TokenInput = ({
           )}
           placeholder="0"
           type="number"
+          onChange={(e) => {
+            const value = e.target.value
+            // 仅保留小数位数验证
+            if (token?.decimals !== undefined) {
+              const decimalPart = value.split(".")[1]
+              if (decimalPart && decimalPart.length > token.decimals) {
+                return
+              }
+            }
+            field.onChange(value)
+          }}
         />
         <div className="flex items-center gap-1">
           <div className="size-6 bg-slate-400 rounded-full flex items-center justify-center">
@@ -93,9 +104,7 @@ const TokenInput = ({
             size="sm"
             type="button"
             className="py-1 px-2 rounded-3xl h-auto ml-2 bg-white hover:bg-white border-none active:scale-95"
-            onClick={() =>
-              field.onChange(isUndefined(balance) ? "" : String(balance))
-            }
+            onClick={() => field.onChange(balance)}
           >
             最高
           </Button>
@@ -135,19 +144,23 @@ const PositionsForm = React.forwardRef<
     defaultValues,
   })
 
+  const { data: tokensInfo = {} } = useDebugTokensInfo()
+
   const [tokenAAddress, tokenBAddress, amount0Desired, amount1Desired] =
     form.watch(["tokenA", "tokenB", "amount0Desired", "amount1Desired"])
   const { balance: tokenABalance } = useTokenBalance(
-    tokenAAddress as `0x${string}`
+    tokensInfo?.[tokenAAddress ?? ""]
   )
   const { balance: tokenBBalance } = useTokenBalance(
-    tokenBAddress as `0x${string}`
+    tokensInfo?.[tokenBAddress ?? ""]
   )
 
   const isInsufficientBalanceA =
-    Number(tokenABalance) <= 0 || Number(amount0Desired) > Number(tokenABalance)
+    parseAmountToBigInt(amount0Desired) >
+    parseAmountToBigInt(tokenABalance ?? "0")
   const isInsufficientBalanceB =
-    Number(tokenBBalance) <= 0 || Number(amount1Desired) > Number(tokenBBalance)
+    parseAmountToBigInt(amount1Desired) >
+    parseAmountToBigInt(tokenBBalance ?? "0")
 
   function handleSubmit(values: z.infer<typeof formSchema>) {
     if (isInsufficientBalanceA || isInsufficientBalanceB) {
@@ -161,8 +174,6 @@ const PositionsForm = React.forwardRef<
       return await form.handleSubmit(handleSubmit)()
     },
   }))
-
-  const { data: tokensInfo = {} } = useDebugTokensInfo()
 
   const getFilteredTokens = React.useCallback(
     (excludeAddress?: string) => {

@@ -1,30 +1,25 @@
 import { useAccount } from "wagmi"
 import { useReadErc20BalanceOf } from "@/lib/contracts"
-import { formatEther } from "viem"
-import BigNumber from "bignumber.js"
+import { formatUnits } from "viem"
+import { Token } from "@/types/swap"
+import { isUndefined } from "lodash-es"
 
-export default function useTokenBalance(
-  tokenAddress?: `0x${string}`,
-  decimals: number = 8
-) {
+export default function useTokenBalance(token?: Token) {
   const { address } = useAccount()
   const { data: balance, refetch } = useReadErc20BalanceOf({
-    address: tokenAddress,
+    address: token?.address,
     args: [address as `0x${string}`],
     query: {
-      enabled: !!tokenAddress,
+      enabled: !!token?.address,
       // 每 3 秒刷新一次
       refetchInterval: 3000,
     },
   })
 
   return {
-    balance:
-      balance === undefined
-        ? balance
-        : new BigNumber(formatEther(balance))
-            .decimalPlaces(decimals, BigNumber.ROUND_FLOOR)
-            .toNumber(),
+    balance: isUndefined(balance)
+      ? balance
+      : formatUnits(balance, token?.decimals || 18),
     refetch,
   }
 }

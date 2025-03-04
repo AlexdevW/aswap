@@ -5,13 +5,14 @@ import { maxBy, minBy } from "lodash-es"
 import BigNumber from "bignumber.js"
 import JSBI from "jsbi"
 import { IS_PROD as isProd } from "@/constants"
+import { formatUnits, parseUnits } from "viem"
 
 export const shortenAddress = (address: string) => {
   if (!address) return ""
   return `${address.slice(0, 6)}...${address.slice(-6)}`
 }
 
-export const parsePriceToSqrtPriceX96 = (price: number): bigint => {
+export const parsePriceToSqrtPriceX96 = (price: string): bigint => {
   // 使用BigNumber处理高精度小数转换
   const adjustedPrice = new BigNumber(price)
     .multipliedBy(1e18)
@@ -34,8 +35,7 @@ export const parseSqrtPriceX96ToPrice = (sqrtPriceX96: bigint): string => {
   })
 }
 
-export const priceToTick = (price: number): number => {
-  if (price <= 0) throw new Error("Price must be positive")
+export const priceToTick = (price: string): number => {
   // 使用Uniswap官方方法处理精度
   const sqrtPriceX96 = parsePriceToSqrtPriceX96(price)
   return TickMath.getTickAtSqrtRatio(JSBI.BigInt(sqrtPriceX96.toString()))
@@ -96,28 +96,53 @@ export const getContractAddress = (
   throw new Error("Invalid contract")
 }
 
-// 改进后的金额转换方法（处理浮点精度）
-export const parseAmountToBigInt = (amount: number, token?: Token): bigint => {
-  // 处理小数精度：先四舍五入到4位小数
-  const rounded = Number(amount.toFixed(4))
-  // 使用字符串操作避免浮点问题
-  const [intPart, decimalPart = ""] = rounded.toString().split(".")
-  const paddedDecimal = decimalPart.padEnd(4, "0").slice(0, 4)
-  const totalUnits = BigInt(intPart + paddedDecimal)
+// 把数字转化为大整数，
+export const parseAmountToBigInt = (amount: string, token?: Token): bigint => {
+  if (!/^[0-9]*[.,]?[0-9]*$/.test(amount))
+    throw new Error("Invalid amount format")
 
-  return totalUnits * BigInt(10 ** ((token?.decimals || 18) - 4))
+  const decimals = token?.decimals || 18
+  const sanitized = amount.replace(/,/g, ".").replace(/\.+/g, ".")
+  const [integer, fraction = ""] = sanitized.split(".")
+
+  // 严格遵循代币原生精度
+  const validFraction = fraction.slice(0, decimals)
+
+  try {
+    return parseUnits(`${integer}.${validFraction}`, decimals)
+  } catch {
+    throw new Error(`Value exceeds precision limits (max ${decimals} decimals)`)
+  }
 }
 
-// 改进后的逆向转换
-export const parseBigIntToAmount = (amount: bigint, token?: Token): number => {
-  const divisor = BigInt(10 ** ((token?.decimals || 18) - 4))
-  const totalUnits = amount / divisor
-  const str = totalUnits.toString().padStart(5, "0") // 确保至少有4位小数
+// 把大整数转化为数字
+export const parseBigIntToAmount = (amount: bigint, token?: Token): string => {
+  const decimals = token?.decimals || 18
+  const value = formatUnits(amount, decimals)
 
-  const integerPart = str.slice(0, -4) || "0"
-  const decimalPart = str.slice(-4).replace(/0+$/, "")
+  // Uniswap显示规则：
+  // 1. 显示所有有效小数位
+  // 2. 去除末尾零
+  // 3. 至少保留一个零当整数部分为0时
+  return value
+    .replace(/(\.\d*?[1-9])0+$/, "$1") // 去除末尾零
+    .replace(/\.$/, "") // 去除纯整数的小数点
+    .replace(/^0+(?=\d)/, "") // 去除前导零
+    .replace(/^\./, "0.") // 处理纯小数情况
+}
 
-  return Number(`${integerPart}.${decimalPart.padEnd(4, "0")}`)
+export function compareTokenAmounts(
+  a: string,
+  b: string,
+  token: Token
+): number {
+  try {
+    const aWei = parseAmountToBigInt(a, token)
+    const bWei = parseAmountToBigInt(b, token)
+    return aWei > bWei ? 1 : aWei < bWei ? -1 : 0
+  } catch {
+    return 0
+  }
 }
 
 export const computeSqrtPriceLimitX96 = (

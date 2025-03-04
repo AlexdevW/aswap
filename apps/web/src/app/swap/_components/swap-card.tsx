@@ -13,16 +13,17 @@ import { ChevronDown } from "lucide-react"
 import TokenSelect from "@/components/token-select"
 import { isUndefined } from "lodash-es"
 import { cn } from "@workspace/ui/lib/utils"
+import { parseAmountToBigInt } from "@/lib/utils"
 
 interface SwapCardProps {
   title: string
   options: Token[]
-  amount?: number
+  amount?: string
   onAmountChange: (val?: string) => void
   token?: Token
   onTokenChange: (token?: Token) => void
   sellModel?: boolean
-  balance?: number
+  balance?: string
 }
 
 export default function SwapCard({
@@ -36,7 +37,11 @@ export default function SwapCard({
   balance,
 }: SwapCardProps) {
   const isInsufficientBalance =
-    sellModel && amount && balance && amount > balance
+    sellModel &&
+    amount &&
+    balance &&
+    parseAmountToBigInt(amount, token) > parseAmountToBigInt(balance, token)
+
   return (
     <Card className="w-full rounded-3xl border-none shadow-none bg-secondary">
       <CardHeader className="pb-3">
@@ -53,7 +58,17 @@ export default function SwapCard({
           )}
           placeholder="0"
           value={amount ?? ""}
-          onChange={(e) => onAmountChange(e.target.value)}
+          onChange={(e) => {
+            const value = e.target.value
+            // 仅保留小数位数验证
+            if (token?.decimals !== undefined) {
+              const decimalPart = value.split(".")[1]
+              if (decimalPart && decimalPart.length > token.decimals) {
+                return
+              }
+            }
+            onAmountChange(value)
+          }}
         />
         <TokenSelect
           trigger={

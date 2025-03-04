@@ -13,8 +13,18 @@ import { Search } from "lucide-react"
 import React, { useState } from "react"
 
 function Balance({ token }: { token?: Token }) {
-  const { balance } = useTokenBalance(token?.address)
-  return balance
+  const { balance } = useTokenBalance(token)
+
+  const formatBalance = (balance: string) => {
+    const [integer, decimal] = balance.split(".")
+    if (!decimal) return integer
+    if (decimal.length > 6) {
+      return `${integer}.${decimal.slice(0, 4)}...`
+    }
+    return balance
+  }
+
+  return balance ? formatBalance(balance) : "0"
 }
 
 export default function TokenSelect({
@@ -93,7 +103,7 @@ export default function TokenSelect({
                 </div>
                 <div>
                   <div>
-                    <Balance token={token} />
+                    <Balance token={token} /> {token.symbol}
                   </div>
                 </div>
               </li>

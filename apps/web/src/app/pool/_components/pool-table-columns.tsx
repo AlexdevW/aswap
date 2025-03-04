@@ -9,32 +9,32 @@ import { Token } from "@/types/swap"
 import BigNumber from "bignumber.js"
 import { CreatePositionsDialog } from "@/app/positions/_components/create-positions-form-dialog"
 
+// 改进格式化价格的辅助函数
+const formatPrice = (priceStr: string): string => {
+  // 使用 BigNumber 处理，避免精度丢失
+  const bn = new BigNumber(priceStr)
+
+  // 如果是整数，直接返回原始字符串
+  if (bn.isInteger()) {
+    return priceStr
+  }
+
+  // 获取小数部分
+  const decimalPart = bn.minus(bn.integerValue()).toString().substring(2)
+
+  // 如果小数部分长度小于等于8，保持原样
+  if (decimalPart.length <= 8) {
+    return priceStr
+  }
+
+  // 否则保留8位小数并去除末尾的0
+  return bn.toFixed(8).replace(/\.?0+$/, "")
+}
+
 export function getColumns(
   tokensInfo: Record<string, Token> = {},
   refetch: () => void
 ): ColumnDef<Readonly<Pool>>[] {
-  // 改进格式化价格的辅助函数
-  const formatPrice = (priceStr: string): string => {
-    // 使用 BigNumber 处理，避免精度丢失
-    const bn = new BigNumber(priceStr)
-
-    // 如果是整数，直接返回原始字符串
-    if (bn.isInteger()) {
-      return priceStr
-    }
-
-    // 获取小数部分
-    const decimalPart = bn.minus(bn.integerValue()).toString().substring(2)
-
-    // 如果小数部分长度小于等于8，保持原样
-    if (decimalPart.length <= 8) {
-      return priceStr
-    }
-
-    // 否则保留8位小数并去除末尾的0
-    return bn.toFixed(8).replace(/\.?0+$/, "")
-  }
-
   return [
     {
       accessorKey: "pool",

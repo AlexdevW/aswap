@@ -58,13 +58,8 @@ export default function Swap() {
   const [isExactInput, setIsExactInput] = useState(true)
 
   // 两个代币的数量
-  const [amountA, setAmountA] = useState<number | undefined>()
-  const [amountB, setAmountB] = useState<number | undefined>()
-
-  const { balance: tokenABalance, refetch: refetchTokenABalance } =
-    useTokenBalance(tokenAddressA)
-  const { balance: tokenBBalance, refetch: refetchTokenBBalance } =
-    useTokenBalance(tokenAddressB)
+  const [amountA, setAmountA] = useState<string>()
+  const [amountB, setAmountB] = useState<string>()
 
   // 获取所有的交易对
   const { data: pairs } = useReadPoolManagerGetPairs({
@@ -72,6 +67,11 @@ export default function Swap() {
   })
 
   const { data: tokensInfo } = useTokensInfo()
+
+  const { balance: tokenABalance, refetch: refetchTokenABalance } =
+    useTokenBalance(tokensInfo?.[tokenAddressA ?? ""])
+  const { balance: tokenBBalance, refetch: refetchTokenBBalance } =
+    useTokenBalance(tokensInfo?.[tokenAddressB ?? ""])
 
   useEffect(() => {
     if (tokensInfo !== undefined) {
@@ -83,9 +83,19 @@ export default function Swap() {
   }, [pairs, tokensInfo])
 
   // 获取所有的交易池
-  const { data: pools } = useReadIPoolManagerGetAllPools({
-    address: getContractAddress("PoolManager"),
-  })
+  const { data: pools, refetch: refetchPools } = useReadIPoolManagerGetAllPools(
+    {
+      address: getContractAddress("PoolManager"),
+      blockTag: "latest",
+      query: {
+        refetchInterval: 10_000, // 每10秒轮询（按需调整间隔）
+        refetchOnWindowFocus: true, // 窗口聚焦时更新
+        refetchOnReconnect: true, // 网络恢复时更新
+        retry: 2,
+        retryDelay: 1000,
+      },
+    }
+  )
 
   // 计算交易池的交易顺序
   const swapPools = useMemo(() => {
@@ -118,23 +128,27 @@ export default function Swap() {
 
   // 计算本次交易的价格限制
   const sqrtPriceLimitX96 = computeSqrtPriceLimitX96(swapPools, zeroForOne)
-
   const publicClient = usePublicClient()
 
+  const [insufficientLiquidityDirection, setInsufficientLiquidityDirection] =
+    useState<"in" | "out" | null>(null)
+
   const updateAmountBWithAmountA = useCallback(
-    async (value: number) => {
+    async (value: string) => {
+      const amountIn = parseAmountToBigInt(value, tokenA)
       if (
         !publicClient ||
         !tokenAddressA ||
         !tokenAddressB ||
-        isNaN(value) ||
-        value === 0
+        amountIn === 0n ||
+        amountIn > parseAmountToBigInt(tokenABalance ?? "0", tokenA)
       ) {
         return
       }
 
       try {
         setIsCalculating(true) // 开始计算时设置状态
+        setInsufficientLiquidityDirection(null)
         const newAmountB = await publicClient.simulateContract({
           address: getContractAddress("SwapRouter"),
           abi: swapRouterAbi,
@@ -144,14 +158,20 @@ export default function Swap() {
               tokenIn: tokenAddressA,
               tokenOut: tokenAddressB,
               indexPath: swapIndexPath,
-              amountIn: parseAmountToBigInt(value, tokenA),
+              amountIn,
               sqrtPriceLimitX96,
             },
           ],
         })
         setAmountB(parseBigIntToAmount(newAmountB.result, tokenB))
         setIsExactInput(true)
+        if (newAmountB.result === 0n) {
+          setInsufficientLiquidityDirection("out")
+          setAmountB(undefined)
+        }
       } catch (e: unknown) {
+        console.log(12312, "123")
+        setInsufficientLiquidityDirection("out")
         if (e instanceof Error) {
           toast.error(e.message)
         }
@@ -163,6 +183,7 @@ export default function Swap() {
       publicClient,
       tokenAddressA,
       tokenAddressB,
+      tokenABalance,
       tokenA,
       tokenB,
       swapIndexPath,
@@ -171,13 +192,20 @@ export default function Swap() {
   )
 
   const updateAmountAWithAmountB = useCallback(
-    async (value: number) => {
-      if (!publicClient || !tokenAddressA || !tokenAddressB || isNaN(value)) {
+    async (value: string) => {
+      const amountOut = parseAmountToBigInt(value, tokenB)
+      if (
+        !publicClient ||
+        !tokenAddressA ||
+        !tokenAddressB ||
+        amountOut === 0n
+      ) {
         return
       }
 
       try {
         setIsCalculating(true) // 开始计算时设置状态
+        setInsufficientLiquidityDirection(null)
         const newAmountA = await publicClient.simulateContract({
           address: getContractAddress("SwapRouter"),
           abi: swapRouterAbi,
@@ -187,14 +215,20 @@ export default function Swap() {
               tokenIn: tokenAddressA,
               tokenOut: tokenAddressB,
               indexPath: swapIndexPath,
-              amountOut: parseAmountToBigInt(value, tokenB),
+              amountOut,
               sqrtPriceLimitX96,
             },
           ],
         })
         setAmountA(parseBigIntToAmount(newAmountA.result, tokenA))
         setIsExactInput(false)
+
+        if (newAmountA.result === 0n) {
+          setInsufficientLiquidityDirection("in")
+          setAmountA(undefined)
+        }
       } catch (e: unknown) {
+        setInsufficientLiquidityDirection("in")
         if (e instanceof Error) {
           toast.error(e.message)
         }
@@ -214,12 +248,12 @@ export default function Swap() {
   )
 
   const handleAmountAChange = (value?: string) => {
-    setAmountA(value === "" ? undefined : Number(value))
+    setAmountA(value)
     setIsExactInput(true)
   }
 
   const handleAmountBChange = (value?: string) => {
-    setAmountB(value === "" ? undefined : Number(value))
+    setAmountB(value)
     setIsExactInput(false)
   }
 
@@ -244,14 +278,26 @@ export default function Swap() {
     if (isExactInput && amountA) {
       debouncedUpdateAmountBWithAmountA(amountA)
     }
-  }, [isExactInput, tokenAddressA, amountA, debouncedUpdateAmountBWithAmountA])
+  }, [
+    isExactInput,
+    tokenAddressA,
+    tokenAddressB,
+    amountA,
+    debouncedUpdateAmountBWithAmountA,
+  ])
 
   useEffect(() => {
     // 当用户输入发生变化时，重新请求报价接口计算价格
     if (!isExactInput && amountB) {
       debouncedUpdateAmountAWithAmountB(amountB)
     }
-  }, [isExactInput, tokenAddressB, amountB, debouncedUpdateAmountAWithAmountB])
+  }, [
+    isExactInput,
+    tokenAddressB,
+    tokenAddressA,
+    amountB,
+    debouncedUpdateAmountAWithAmountB,
+  ])
 
   const { writeContractAsync: writeExactInput } = useWriteSwapRouterExactInput()
   const { writeContractAsync: writeExactOutput } =
@@ -286,7 +332,7 @@ export default function Swap() {
             tokenIn: tokenAddressA!,
             tokenOut: tokenAddressB!,
             amountOut: parseAmountToBigInt(amountB!, tokenB),
-            amountInMaximum: parseAmountToBigInt(Math.ceil(amountA!), tokenA),
+            amountInMaximum: parseAmountToBigInt(amountA!, tokenA),
             recipient: account?.address as `0x${string}`,
             deadline: BigInt(Math.floor(Date.now() / 1000) + 1000),
             sqrtPriceLimitX96,
@@ -306,8 +352,11 @@ export default function Swap() {
           })
         }
         toast.success("交易成功")
+        setAmountA("")
+        setAmountB("")
         refetchTokenABalance()
         refetchTokenBBalance()
+        refetchPools()
       } catch (e: unknown) {
         if (e instanceof Error) {
           toast.error(e.message)
@@ -328,20 +377,35 @@ export default function Swap() {
 
   function getButtonText() {
     if (!tokenAddressA || !tokenAddressB) return "选择代币"
+    if (insufficientLiquidityDirection) {
+      return insufficientLiquidityDirection === "in"
+        ? `${tokenA?.symbol} 流动性不足`
+        : `${tokenB?.symbol} 流动性不足`
+    }
     if (!amountA || !amountB) return "输入金额"
+    if (swapPools.length === 0) return "当前交易对无流动性"
     if (isCalculating) return "确认最终报价..."
-    if (tokenABalance && amountA > tokenABalance) return `${tokenA?.symbol}不足`
+    if (
+      parseAmountToBigInt(amountA!, tokenA) >
+      parseAmountToBigInt(tokenABalance ?? "0", tokenA)
+    ) {
+      return `${tokenA?.symbol} 不足`
+    }
+
     return "交易"
   }
 
   return (
     <div>
-      <div className="w-[480px] mx-auto my-8 flex flex-col justify-center items-center gap-1 bg-white p-2 rounded-3xl">
+      <div className="max-w-[480px] mx-auto my-8 flex flex-col justify-center items-center gap-1 bg-white p-2 rounded-3xl">
         <SwapCard
           title="出售"
           options={sellOptions}
           onAmountChange={handleAmountAChange}
-          onTokenChange={setTokenA}
+          onTokenChange={(token) => {
+            setTokenA(token)
+            if (token?.address !== tokenA?.address) setAmountA("")
+          }}
           token={tokenA}
           amount={amountA}
           balance={tokenABalance}
@@ -361,7 +425,10 @@ export default function Swap() {
           title="购买"
           options={buyOptions}
           onAmountChange={handleAmountBChange}
-          onTokenChange={setTokenB}
+          onTokenChange={(token) => {
+            setTokenB(token)
+            if (token?.address !== tokenB?.address) setAmountB("")
+          }}
           token={tokenB}
           amount={amountB}
           balance={tokenBBalance}
@@ -375,7 +442,9 @@ export default function Swap() {
             !amountA ||
             !amountB ||
             !tokenABalance ||
-            amountA > tokenABalance ||
+            swapPools.length === 0 ||
+            parseAmountToBigInt(amountA!, tokenA) >
+              parseAmountToBigInt(tokenABalance, tokenA) ||
             isCreatePending ||
             isCalculating
           }

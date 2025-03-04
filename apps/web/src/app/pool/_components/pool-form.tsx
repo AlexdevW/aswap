@@ -27,32 +27,57 @@ import { ChevronDown } from "lucide-react"
 import useDebugTokensInfo from "@/hooks/use-debug-token-info"
 import { Token } from "@/types/swap"
 
-const formSchema = z.object({
-  tokenA: z
-    .string()
-    .min(42, "地址长度必须为42字符")
-    .max(42, "地址长度必须为42字符")
-    .regex(/^0x[a-fA-F0-9]{40}$/, "必须是有效的以太坊地址"),
-  tokenB: z
-    .string()
-    .min(42, "地址长度必须为42字符")
-    .max(42, "地址长度必须为42字符")
-    .regex(/^0x[a-fA-F0-9]{40}$/, "必须是有效的以太坊地址"),
-  fee: z.number().refine((val) => [3000, 500, 10000].includes(val), {
-    message: "请选择有效费率等级",
-  }),
-  priceLower: z
-    .number({ message: "最低价格不能为空" })
-    .min(0.000001, "最低价格不能低于0.000001"),
-  priceUpper: z
-    .number({ message: "最高价格不能为空" })
-    .max(Number.MAX_SAFE_INTEGER, `最高价格不能超过${Number.MAX_SAFE_INTEGER}`),
-  price: z
-    .number({ message: "价格不能为空" })
-    .min(0.000001, "价格不能低于0.000001")
-    .max(Number.MAX_SAFE_INTEGER, `价格不能超过${Number.MAX_SAFE_INTEGER}`)
-    .multipleOf(0.000001, "最多支持6位小数"),
-})
+const formSchema = z
+  .object({
+    tokenA: z
+      .string()
+      .min(42, "地址长度必须为42字符")
+      .max(42, "地址长度必须为42字符")
+      .regex(/^0x[a-fA-F0-9]{40}$/, "必须是有效的以太坊地址"),
+    tokenB: z
+      .string()
+      .min(42, "地址长度必须为42字符")
+      .max(42, "地址长度必须为42字符")
+      .regex(/^0x[a-fA-F0-9]{40}$/, "必须是有效的以太坊地址"),
+    fee: z.number().refine((val) => [3000, 500, 10000].includes(val), {
+      message: "请选择有效费率等级",
+    }),
+    priceLower: z
+      .string({ message: "最低价格不能为空" })
+      .refine((val) => /^-?\d+(\.\d{1,18})?$/.test(val), {
+        message: "最多支持18位小数",
+      })
+      .refine((val) => Number(val) !== 0, {
+        message: "价格不能为0",
+      }),
+    priceUpper: z
+      .string({ message: "最高价格不能为空" })
+      .refine((val) => /^-?\d+(\.\d{1,18})?$/.test(val), {
+        message: "最多支持18位小数",
+      })
+      .refine((val) => Number(val) !== 0, {
+        message: "价格不能为0",
+      }),
+    price: z
+      .string({ message: "价格不能为空" })
+      .refine((val) => /^-?\d+(\.\d{1,18})?$/.test(val), {
+        message: "最多支持18位小数",
+      })
+      .refine((val) => Number(val) !== 0, {
+        message: "价格不能为0",
+      }),
+  })
+  .superRefine((values, ctx) => {
+    const lower = Number(values.priceLower)
+    const upper = Number(values.priceUpper)
+    if (upper <= lower) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "最高价格必须大于最低价格",
+        path: ["priceUpper"],
+      })
+    }
+  })
 
 export type PoolFormType = z.infer<typeof formSchema>
 
@@ -94,9 +119,9 @@ const PoolForm = React.forwardRef<
       tokenA: getContractAddress("DebugTokenA"),
       tokenB: getContractAddress("DebugTokenB"),
       fee: 500,
-      priceLower: 0.000001,
-      priceUpper: 1000000,
-      price: 1,
+      priceLower: "0.000001",
+      priceUpper: "1000000",
+      price: "1",
     },
   })
 
@@ -206,14 +231,7 @@ const PoolForm = React.forwardRef<
               <FormItem className="flex-1">
                 <FormLabel>最低价格</FormLabel>
                 <FormControl>
-                  <Input
-                    type="number"
-                    {...field}
-                    onChange={(e) => {
-                      const value = e.target.value
-                      field.onChange(value === "" ? "" : Number(value))
-                    }}
-                  />
+                  <Input type="number" {...field} />
                 </FormControl>
                 <FormMessage />
                 <FormDescription>在价格范围内参与市场交易</FormDescription>
@@ -227,14 +245,7 @@ const PoolForm = React.forwardRef<
               <FormItem className="flex-1">
                 <FormLabel>最高价格</FormLabel>
                 <FormControl>
-                  <Input
-                    type="number"
-                    {...field}
-                    onChange={(e) => {
-                      const value = e.target.value
-                      field.onChange(value === "" ? "" : Number(value))
-                    }}
-                  />
+                  <Input type="number" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -261,15 +272,7 @@ const PoolForm = React.forwardRef<
                 </FormLabel>
                 <FormControl>
                   <div className="flex w-full items-center space-x-2">
-                    <Input
-                      className="flex-1"
-                      type="number"
-                      {...field}
-                      onChange={(e) => {
-                        const value = e.target.value
-                        field.onChange(value === "" ? "" : Number(value))
-                      }}
-                    />
+                    <Input className="flex-1" type="number" {...field} />
                     <div className="whitespace-nowrap text-muted-foreground font-semibold text-sm">
                       {token1Symbol} 每 {token0Symbol}
                     </div>
