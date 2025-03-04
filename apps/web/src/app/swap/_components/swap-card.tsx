@@ -87,7 +87,7 @@ export default function SwapCard({
               "text-red-400": isInsufficientBalance,
             })}
           >
-            {balance}
+            {balance} {token?.symbol}
           </span>
           {sellModel && (
             <Button

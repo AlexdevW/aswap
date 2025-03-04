@@ -1,6 +1,12 @@
 "use client"
 
-import React, { useCallback, useEffect, useState, useTransition } from "react"
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+  useTransition,
+} from "react"
 import SwapCard from "./swap-card"
 import { Button } from "@workspace/ui/components/button"
 import { ArrowDown, Loader } from "lucide-react"
@@ -24,10 +30,13 @@ import { useAccount, usePublicClient } from "wagmi"
 import { toast } from "@workspace/ui/components/sonner"
 import useTokenBalance from "@/hooks/use-token-balance"
 import useTokensInfo from "@/hooks/use-debug-token-info"
+import { useDebouncedCallback } from "@workspace/ui/hooks/use-debounced-callback"
 
 export default function Swap() {
   const account = useAccount()
   const [isCreatePending, startCreateTransition] = useTransition()
+  // 新增计算状态
+  const [isCalculating, setIsCalculating] = useState(false)
   // 用户可以选择的代币
   const [tokens, setTokens] = useState<Token[]>([])
   // 用户选择的两个代币
@@ -52,8 +61,10 @@ export default function Swap() {
   const [amountA, setAmountA] = useState<number | undefined>()
   const [amountB, setAmountB] = useState<number | undefined>()
 
-  const tokenABalance = useTokenBalance(tokenAddressA)
-  const tokenBBalance = useTokenBalance(tokenAddressB)
+  const { balance: tokenABalance, refetch: refetchTokenABalance } =
+    useTokenBalance(tokenAddressA)
+  const { balance: tokenBBalance, refetch: refetchTokenBBalance } =
+    useTokenBalance(tokenAddressB)
 
   // 获取所有的交易对
   const { data: pairs } = useReadPoolManagerGetPairs({
@@ -72,29 +83,38 @@ export default function Swap() {
   }, [pairs, tokensInfo])
 
   // 获取所有的交易池
-  const { data: pools = [] } = useReadIPoolManagerGetAllPools({
+  const { data: pools } = useReadIPoolManagerGetAllPools({
     address: getContractAddress("PoolManager"),
   })
 
   // 计算交易池的交易顺序
-  const swapPools = pools.filter((pool) => {
+  const swapPools = useMemo(() => {
     return (
-      pool.token0 === token0 && pool.token1 === token1 && pool.liquidity > 0
+      pools?.filter((pool) => {
+        return (
+          pool.token0 === token0 && pool.token1 === token1 && pool.liquidity > 0
+        )
+      }) || []
     )
-  })
-  const swapIndexPath: number[] = swapPools
-    .sort((a, b) => {
-      // 简单处理，按照价格排序，再按照手续费排序，优先在价格低的池子中交易（按照 tick 判断），如果价格一样，就在手续费低的池子里面交易
-      if (a.tick !== b.tick) {
-        if (zeroForOne) {
-          // token0 交换 token1 时，tick 越大意味着 token0 价格越高，所以要把 tick 大的放前面
-          return b.tick > a.tick ? 1 : -1
-        }
-        return a.tick > b.tick ? 1 : -1
-      }
-      return a.fee - b.fee
-    })
-    .map((pool) => pool.index)
+  }, [pools, token0, token1])
+
+  const swapIndexPath: number[] = useMemo(() => {
+    return (
+      swapPools
+        ?.sort((a, b) => {
+          // 简单处理，按照价格排序，再按照手续费排序，优先在价格低的池子中交易（按照 tick 判断），如果价格一样，就在手续费低的池子里面交易
+          if (a.tick !== b.tick) {
+            if (zeroForOne) {
+              // token0 交换 token1 时，tick 越大意味着 token0 价格越高，所以要把 tick 大的放前面
+              return b.tick > a.tick ? 1 : -1
+            }
+            return a.tick > b.tick ? 1 : -1
+          }
+          return a.fee - b.fee
+        })
+        .map((pool) => pool.index) || []
+    )
+  }, [swapPools, zeroForOne])
 
   // 计算本次交易的价格限制
   const sqrtPriceLimitX96 = computeSqrtPriceLimitX96(swapPools, zeroForOne)
@@ -112,12 +132,9 @@ export default function Swap() {
       ) {
         return
       }
-      if (tokenAddressA === tokenAddressB) {
-        toast.error("Please select different tokens")
-        return
-      }
 
       try {
+        setIsCalculating(true) // 开始计算时设置状态
         const newAmountB = await publicClient.simulateContract({
           address: getContractAddress("SwapRouter"),
           abi: swapRouterAbi,
@@ -138,6 +155,8 @@ export default function Swap() {
         if (e instanceof Error) {
           toast.error(e.message)
         }
+      } finally {
+        setIsCalculating(false) // 无论成功失败都清除状态
       }
     },
     [
@@ -156,7 +175,9 @@ export default function Swap() {
       if (!publicClient || !tokenAddressA || !tokenAddressB || isNaN(value)) {
         return
       }
+
       try {
+        setIsCalculating(true) // 开始计算时设置状态
         const newAmountA = await publicClient.simulateContract({
           address: getContractAddress("SwapRouter"),
           abi: swapRouterAbi,
@@ -177,6 +198,8 @@ export default function Swap() {
         if (e instanceof Error) {
           toast.error(e.message)
         }
+      } finally {
+        setIsCalculating(false) // 无论成功失败都清除状态
       }
     },
     [
@@ -207,22 +230,28 @@ export default function Swap() {
     setAmountB(amountA)
   }
 
+  const debouncedUpdateAmountBWithAmountA = useDebouncedCallback(
+    updateAmountBWithAmountA,
+    300
+  )
+  const debouncedUpdateAmountAWithAmountB = useDebouncedCallback(
+    updateAmountAWithAmountB,
+    300
+  )
+
   useEffect(() => {
     // 当用户输入发生变化时，重新请求报价接口计算价格
-    if (isExactInput) {
-      updateAmountBWithAmountA(amountA || 0)
-    } else {
-      updateAmountAWithAmountB(amountB || 0)
+    if (isExactInput && amountA) {
+      debouncedUpdateAmountBWithAmountA(amountA)
     }
-  }, [
-    isExactInput,
-    tokenAddressA,
-    tokenAddressB,
-    amountA,
-    amountB,
-    updateAmountBWithAmountA,
-    updateAmountAWithAmountB,
-  ])
+  }, [isExactInput, tokenAddressA, amountA, debouncedUpdateAmountBWithAmountA])
+
+  useEffect(() => {
+    // 当用户输入发生变化时，重新请求报价接口计算价格
+    if (!isExactInput && amountB) {
+      debouncedUpdateAmountAWithAmountB(amountB)
+    }
+  }, [isExactInput, tokenAddressB, amountB, debouncedUpdateAmountAWithAmountB])
 
   const { writeContractAsync: writeExactInput } = useWriteSwapRouterExactInput()
   const { writeContractAsync: writeExactOutput } =
@@ -276,6 +305,9 @@ export default function Swap() {
             args: [swapParams],
           })
         }
+        toast.success("交易成功")
+        refetchTokenABalance()
+        refetchTokenBBalance()
       } catch (e: unknown) {
         if (e instanceof Error) {
           toast.error(e.message)
@@ -293,6 +325,14 @@ export default function Swap() {
     () => tokens.filter((t) => t !== tokenA),
     [tokens, tokenA]
   )
+
+  function getButtonText() {
+    if (!tokenAddressA || !tokenAddressB) return "选择代币"
+    if (!amountA || !amountB) return "输入金额"
+    if (isCalculating) return "确认最终报价..."
+    if (tokenABalance && amountA > tokenABalance) return `${tokenA?.symbol}不足`
+    return "交易"
+  }
 
   return (
     <div>
@@ -336,13 +376,14 @@ export default function Swap() {
             !amountB ||
             !tokenABalance ||
             amountA > tokenABalance ||
-            isCreatePending
+            isCreatePending ||
+            isCalculating
           }
         >
-          {isCreatePending && (
+          {(isCreatePending || isCalculating) && (
             <Loader className="mr-2 size-4 animate-spin" aria-hidden="true" />
           )}
-          交易
+          {getButtonText()}
         </Button>
       </div>
     </div>

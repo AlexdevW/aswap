@@ -137,8 +137,12 @@ const PositionsForm = React.forwardRef<
 
   const [tokenAAddress, tokenBAddress, amount0Desired, amount1Desired] =
     form.watch(["tokenA", "tokenB", "amount0Desired", "amount1Desired"])
-  const tokenABalance = useTokenBalance(tokenAAddress as `0x${string}`)
-  const tokenBBalance = useTokenBalance(tokenBAddress as `0x${string}`)
+  const { balance: tokenABalance } = useTokenBalance(
+    tokenAAddress as `0x${string}`
+  )
+  const { balance: tokenBBalance } = useTokenBalance(
+    tokenBAddress as `0x${string}`
+  )
 
   const isInsufficientBalanceA =
     Number(tokenABalance) <= 0 || Number(amount0Desired) > Number(tokenABalance)

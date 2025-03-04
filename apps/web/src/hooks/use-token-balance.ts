@@ -8,7 +8,7 @@ export default function useTokenBalance(
   decimals: number = 8
 ) {
   const { address } = useAccount()
-  const { data: balance } = useReadErc20BalanceOf({
+  const { data: balance, refetch } = useReadErc20BalanceOf({
     address: tokenAddress,
     args: [address as `0x${string}`],
     query: {
@@ -18,9 +18,13 @@ export default function useTokenBalance(
     },
   })
 
-  return balance === undefined
-    ? balance
-    : new BigNumber(formatEther(balance))
-        .decimalPlaces(decimals, BigNumber.ROUND_FLOOR)
-        .toNumber()
+  return {
+    balance:
+      balance === undefined
+        ? balance
+        : new BigNumber(formatEther(balance))
+            .decimalPlaces(decimals, BigNumber.ROUND_FLOOR)
+            .toNumber(),
+    refetch,
+  }
 }

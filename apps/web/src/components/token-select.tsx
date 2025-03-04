@@ -13,7 +13,8 @@ import { Search } from "lucide-react"
 import React, { useState } from "react"
 
 function Balance({ token }: { token?: Token }) {
-  return useTokenBalance(token?.address)
+  const { balance } = useTokenBalance(token?.address)
+  return balance
 }
 
 export default function TokenSelect({
