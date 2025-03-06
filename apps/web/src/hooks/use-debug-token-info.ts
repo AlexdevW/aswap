@@ -62,5 +62,8 @@ export default function useDebugTokensInfo() {
     enabled: !!publicClient,
     gcTime: 1000 * 60 * 30, // 替换 cacheTime
     staleTime: 1000 * 60 * 5,
+    refetchOnWindowFocus: true, // 窗口聚焦时更新
+    refetchOnReconnect: true, // 网络恢复时更新
+    refetchInterval: 10_000, // 每10秒轮询（按需调整间隔）
   })
 }

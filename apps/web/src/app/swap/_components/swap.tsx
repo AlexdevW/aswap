@@ -31,6 +31,7 @@ import { toast } from "@workspace/ui/components/sonner"
 import useTokenBalance from "@/hooks/use-token-balance"
 import useTokensInfo from "@/hooks/use-debug-token-info"
 import { useDebouncedCallback } from "@workspace/ui/hooks/use-debounced-callback"
+import Settings from "./settings"
 
 export default function Swap() {
   const account = useAccount()
@@ -398,6 +399,7 @@ export default function Swap() {
   return (
     <div>
       <div className="max-w-[480px] mx-auto my-8 flex flex-col justify-center items-center gap-1 bg-white p-2 rounded-3xl">
+        <Settings />
         <SwapCard
           title="出售"
           options={sellOptions}
