@@ -62,6 +62,9 @@ export default function Swap() {
   const [amountA, setAmountA] = useState<string>()
   const [amountB, setAmountB] = useState<string>()
 
+  const [deadline, setDeadline] = useState(30)
+  const [slippage, setSlippage] = useState<number | undefined>(0.5)
+
   // 获取所有的交易对
   const { data: pairs } = useReadPoolManagerGetPairs({
     address: getContractAddress("PoolManager"),
@@ -128,7 +131,11 @@ export default function Swap() {
   }, [swapPools, zeroForOne])
 
   // 计算本次交易的价格限制
-  const sqrtPriceLimitX96 = computeSqrtPriceLimitX96(swapPools, zeroForOne)
+  const sqrtPriceLimitX96 = computeSqrtPriceLimitX96(
+    swapPools,
+    zeroForOne,
+    slippage
+  )
   const publicClient = usePublicClient()
 
   const [insufficientLiquidityDirection, setInsufficientLiquidityDirection] =
@@ -315,7 +322,7 @@ export default function Swap() {
             amountIn: parseAmountToBigInt(amountA!, tokenA),
             amountOutMinimum: parseAmountToBigInt(amountB!, tokenB),
             recipient: account?.address as `0x${string}`,
-            deadline: BigInt(Math.floor(Date.now() / 1000) + 1000),
+            deadline: BigInt(Math.floor(Date.now() / 1000) + deadline * 60),
             sqrtPriceLimitX96,
             indexPath: swapIndexPath,
           }
@@ -335,7 +342,7 @@ export default function Swap() {
             amountOut: parseAmountToBigInt(amountB!, tokenB),
             amountInMaximum: parseAmountToBigInt(amountA!, tokenA),
             recipient: account?.address as `0x${string}`,
-            deadline: BigInt(Math.floor(Date.now() / 1000) + 1000),
+            deadline: BigInt(Math.floor(Date.now() / 1000) + deadline * 60),
             sqrtPriceLimitX96,
             indexPath: swapIndexPath,
           }
@@ -399,7 +406,10 @@ export default function Swap() {
   return (
     <div>
       <div className="max-w-[480px] mx-auto my-8 flex flex-col justify-center items-center gap-1 bg-white p-2 rounded-3xl">
-        <Settings />
+        <Settings
+          onDeadlineChange={(minutes) => setDeadline(minutes)}
+          onSlippageChange={(slippage) => setSlippage(slippage)}
+        />
         <SwapCard
           title="出售"
           options={sellOptions}
