@@ -30,9 +30,11 @@ createAppKit({
   metadata: metadata,
   features: {
     analytics: false, // Optional - defaults to your Cloud configuration
-    email: true,
-    onramp: true,
-    swaps: true,
+    email: false,
+    onramp: false,
+    swaps: false,
+    send: false,
+    socials: false,
   },
   themeMode: "light",
 })

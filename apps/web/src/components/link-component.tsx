@@ -1,24 +1,31 @@
-import Link from 'next/link'
-import React, { ReactNode } from 'react'
+import Link from "next/link"
+import React, { ComponentProps } from "react"
 
-interface Props {
-  href: string
-  children: ReactNode
+interface Props extends ComponentProps<typeof Link> {
   isExternal?: boolean
-  className?: string
 }
 
-export default function LinkComponent({ href, children, isExternal, className }: Props) {
-  if (isExternal || href.match(/^([a-z0-9]*:|.{0})\/\/.*$/)) {
+export default function LinkComponent({
+  href,
+  children,
+  isExternal,
+  ...rest
+}: Props) {
+  const hrefString = typeof href === "string" ? href : href.href || ""
+  const protocol = typeof href === "string" ? "" : href.protocol || ""
+  const isExternalLink =
+    isExternal || /^([a-z0-9]*:|.{0})\/\/.*$/.test(hrefString || protocol)
+
+  if (isExternalLink) {
     return (
-      <Link className={className} href={href} target='_blank' rel='noopener noreferrer'>
+      <Link href={href} target="_blank" rel="noopener noreferrer" {...rest}>
         {children}
       </Link>
     )
   }
 
   return (
-    <Link className={className} href={href}>
+    <Link href={href} {...rest}>
       {children}
     </Link>
   )
