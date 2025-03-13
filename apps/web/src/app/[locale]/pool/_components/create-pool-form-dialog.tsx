@@ -1,6 +1,7 @@
 "use client"
 import { Loader, PlusIcon } from "lucide-react"
 import * as React from "react"
+import { useTranslations } from "next-intl"
 
 import { Button } from "@workspace/ui/components/button"
 import { toast } from "@workspace/ui/components/sonner"
@@ -30,17 +31,13 @@ enum TransactionStatus {
   CREATING_POOL = "creating_pool",
 }
 
-const buttonTextMap: Record<TransactionStatus, string> = {
-  [TransactionStatus.IDLE]: "提交",
-  [TransactionStatus.CREATING_POOL]: "正在创建交易池...",
-}
-
 export function CreatePoolDialog({
   onSuccess,
   open: controlledOpen,
   onOpenChange,
   ...props
 }: CreatePoolDialogProps) {
+  const t = useTranslations("CreatePoolDialog")
   const [uncontrolledOpen, setUncontrolledOpen] = React.useState(false)
   const [txStatus, setTxStatus] = React.useState<TransactionStatus>(
     TransactionStatus.IDLE
@@ -84,7 +81,7 @@ export function CreatePoolDialog({
           ],
         })
         handleOpenChange(false)
-        toast.success("创建交易池成功")
+        toast.success(t("successMessage"))
         onSuccess?.()
       } catch (error: unknown) {
         toast.error(handleTransactionError(error))
@@ -92,10 +89,15 @@ export function CreatePoolDialog({
         setTxStatus(TransactionStatus.IDLE)
       }
     },
-    [writeContractAsync, handleOpenChange, onSuccess]
+    [writeContractAsync, handleOpenChange, onSuccess, t]
   )
 
   const isCreatePending = txStatus !== TransactionStatus.IDLE
+
+  const buttonTextMap: Record<TransactionStatus, string> = {
+    [TransactionStatus.IDLE]: t("submit"),
+    [TransactionStatus.CREATING_POOL]: t("creatingPool"),
+  }
 
   return (
     <ResponsiveDialog
@@ -104,20 +106,20 @@ export function CreatePoolDialog({
       trigger={
         <Button variant="outline" size="sm">
           <PlusIcon className="size-4" aria-hidden="true" />
-          新建
+          {t("new")}
         </Button>
       }
-      title="创建交易池"
+      title={t("createPool")}
       contentClassName="bg-white !rounded-3xl"
       footer={
         <>
           <DialogCloseButton>
             <Button disabled={isCreatePending} variant="outline">
-              取消
+              {t("cancel")}
             </Button>
           </DialogCloseButton>
           <Button
-            aria-label="添加新交易池"
+            aria-label={t("addNewPool")}
             onClick={() => formRef.current?.submit()}
             disabled={isCreatePending}
           >

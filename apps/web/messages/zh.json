@@ -6,5 +6,119 @@
     "LocaleSwitcher": {
         "label": "切换语言",
         "locale": "{locale, select, zh {🇨🇳 中文} en {🇺🇸 English} other {Unknown}}"
+    },
+    "Swap": {
+        "selectToken": "选择代币",
+        "insufficientLiquidity": "{token} 流动性不足",
+        "enterAmount": "输入金额",
+        "noLiquidity": "当前交易对无流动性",
+        "confirmingQuote": "确认最终报价...",
+        "insufficientBalance": "{token} 不足",
+        "swap": "交易",
+        "sell": "出售",
+        "buy": "购买",
+        "max": "最大"
+    },
+    "Settings": {
+        "swap": "交易",
+        "slippageLimit": "滑点上限",
+        "slippageInfo": "如果价格变动超过滑点百分比，则你的交易将撤回。",
+        "highSlippageWarning": "滑点设置过高，可能导致交易损失较大。",
+        "transactionDeadline": "交易截止日期",
+        "deadlineInfo": "如果你的交易处于待处理状态超过该时间，则交易将被撤销。（最长时间：3天）",
+        "auto": "自动"
+    },
+    "Faucet": {
+        "getTestToken": "领取测试代币"
+    },
+    "Pool": {
+        "title": "资金池"
+    },
+    "PoolTableColumns": {
+        "pool": "资金池",
+        "price": "价格",
+        "fee": "手续费",
+        "tickLower": "最低价格",
+        "tickUpper": "最高价格",
+        "tick": "价格刻度",
+        "liquidity": "流动性",
+        "actions": "操作"
+    },
+    "PoolTableToolbarActions": {
+        "positions": "仓位"
+    },
+    "PoolForm": {
+        "selectTokenPair": "请选择代币对",
+        "fee": "手续费",
+        "fee500": "0.05%",
+        "fee3000": "0.3%",
+        "fee10000": "1%",
+        "priceLower": "最低价格",
+        "priceUpper": "最高价格",
+        "initialPrice": "初始价格",
+        "priceLowerDescription": "在价格范围内参与市场交易",
+        "priceDescription": "{token1Symbol} 每 {token0Symbol}",
+        "addressLength": "地址长度必须为42字符",
+        "validEthereumAddress": "必须是有效的以太坊地址",
+        "validFeeLevel": "请选择有效费率等级",
+        "priceLowerEmpty": "最低价格不能为空",
+        "maxDecimals": "最多支持18位小数",
+        "priceNotZero": "价格不能为0",
+        "priceUpperEmpty": "最高价格不能为空",
+        "priceEmpty": "价格不能为空",
+        "priceUpperGreater": "最高价格必须大于最低价格"
+    },
+    "CreatePoolDialog": {
+        "submit": "提交",
+        "creatingPool": "正在创建交易池...",
+        "createPool": "创建交易池",
+        "cancel": "取消",
+        "addNewPool": "添加新交易池",
+        "successMessage": "创建交易池成功",
+        "new": "新建"
+    },
+    "CreatePositionsDialog": {
+        "submit": "提交",
+        "approvingToken0": "正在授权第一个代币...",
+        "approvingToken1": "正在授权第二个代币...",
+        "creatingPosition": "正在创建头寸...",
+        "authorizingToken0": "正在授权第一个代币...",
+        "authorizingToken1": "正在授权第二个代币...",
+        "token0Authorized": "第一个代币授权成功",
+        "token1Authorized": "第二个代币授权成功",
+        "tokenAuthorizationFailed": "授权第{token}个代币失败: {error}",
+        "unknownError": "未知错误",
+        "connectWallet": "请先连接钱包",
+        "positionCreated": "创建头寸成功",
+        "createPosition": "创建头寸",
+        "cancel": "取消",
+        "addNewPosition": "添加头寸"
+    },
+    "PositionsForm": {
+        "selectTokenPair": "选择代币对",
+        "enterAmount": "请输入存入代币数量",
+        "addressLength": "地址长度必须为42字符",
+        "validEthereumAddress": "必须是有效的以太坊地址",
+        "indexMin": "索引不能小于0",
+        "insufficientBalance": "余额不足",
+        "max": "最高"
+    },
+    "PositionsTableColumns": {
+        "id": "ID",
+        "owner": "所有者",
+        "pool": "资金池",
+        "fee": "手续费",
+        "index": "索引",
+        "liquidity": "流动性",
+        "tickLower": "最低价格",
+        "tickUpper": "最高价格",
+        "tokensOwed0": "应付代币0",
+        "tokensOwed1": "应付代币1",
+        "feeGrowthInside0": "内部手续费增长0",
+        "feeGrowthInside1": "内部手续费增长1",
+        "actions": "操作",
+        "remove": "移除",
+        "collect": "收集",
+        "error": "错误: {error}"
     }
 }

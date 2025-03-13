@@ -14,6 +14,7 @@ import TokenSelect from "@/components/token-select"
 import { isUndefined } from "lodash-es"
 import { cn } from "@workspace/ui/lib/utils"
 import { parseAmountToBigInt } from "@/lib/utils"
+import { useTranslations } from "next-intl"
 
 interface SwapCardProps {
   title: string
@@ -36,6 +37,8 @@ export default function SwapCard({
   sellModel,
   balance,
 }: SwapCardProps) {
+  const t = useTranslations("Swap")
+
   const isInsufficientBalance =
     sellModel &&
     amount &&
@@ -84,7 +87,7 @@ export default function SwapCard({
                     </div>
                   </div>
                 ) : (
-                  <span className="font-semibold">选择代币</span>
+                  <span className="font-semibold">{t("selectToken")}</span>
                 )}
                 <ChevronDown />
               </>
@@ -113,7 +116,7 @@ export default function SwapCard({
                 onAmountChange(isUndefined(balance) ? "" : String(balance))
               }
             >
-              最高
+              {t("max")}
             </Button>
           )}
         </div>

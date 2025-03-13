@@ -32,8 +32,10 @@ import useTokenBalance from "@/hooks/use-token-balance"
 import useTokensInfo from "@/hooks/use-debug-token-info"
 import { useDebouncedCallback } from "@workspace/ui/hooks/use-debounced-callback"
 import Settings from "./settings"
+import { useTranslations } from "next-intl"
 
 export default function Swap() {
+  const t = useTranslations("Swap")
   const account = useAccount()
   const [isCreatePending, startCreateTransition] = useTransition()
   // 新增计算状态
@@ -384,23 +386,23 @@ export default function Swap() {
   )
 
   function getButtonText() {
-    if (!tokenAddressA || !tokenAddressB) return "选择代币"
+    if (!tokenAddressA || !tokenAddressB) return t("selectToken")
     if (insufficientLiquidityDirection) {
       return insufficientLiquidityDirection === "in"
-        ? `${tokenA?.symbol} 流动性不足`
-        : `${tokenB?.symbol} 流动性不足`
+        ? t("insufficientLiquidity", { token: tokenA?.symbol })
+        : t("insufficientLiquidity", { token: tokenB?.symbol })
     }
-    if (!amountA || !amountB) return "输入金额"
-    if (swapPools.length === 0) return "当前交易对无流动性"
-    if (isCalculating) return "确认最终报价..."
+    if (!amountA || !amountB) return t("enterAmount")
+    if (swapPools.length === 0) return t("noLiquidity")
+    if (isCalculating) return t("confirmingQuote")
     if (
       parseAmountToBigInt(amountA!, tokenA) >
       parseAmountToBigInt(tokenABalance ?? "0", tokenA)
     ) {
-      return `${tokenA?.symbol} 不足`
+      return t("insufficientBalance", { token: tokenA?.symbol })
     }
 
-    return "交易"
+    return t("swap")
   }
 
   return (
@@ -411,7 +413,7 @@ export default function Swap() {
           onSlippageChange={(slippage) => setSlippage(slippage)}
         />
         <SwapCard
-          title="出售"
+          title={t("sell")}
           options={sellOptions}
           onAmountChange={handleAmountAChange}
           onTokenChange={(token) => {
@@ -434,7 +436,7 @@ export default function Swap() {
           </Button>
         </div>
         <SwapCard
-          title="购买"
+          title={t("buy")}
           options={buyOptions}
           onAmountChange={handleAmountBChange}
           onTokenChange={(token) => {

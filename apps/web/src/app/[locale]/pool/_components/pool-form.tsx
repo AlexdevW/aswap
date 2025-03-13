@@ -26,63 +26,66 @@ import TokenSelect from "@/components/token-select"
 import { ChevronDown } from "lucide-react"
 import useDebugTokensInfo from "@/hooks/use-debug-token-info"
 import { Token } from "@/types/swap"
+import { useTranslations } from "next-intl"
 
-const formSchema = z
-  .object({
-    tokenA: z
-      .string()
-      .min(42, "地址长度必须为42字符")
-      .max(42, "地址长度必须为42字符")
-      .regex(/^0x[a-fA-F0-9]{40}$/, "必须是有效的以太坊地址"),
-    tokenB: z
-      .string()
-      .min(42, "地址长度必须为42字符")
-      .max(42, "地址长度必须为42字符")
-      .regex(/^0x[a-fA-F0-9]{40}$/, "必须是有效的以太坊地址"),
-    fee: z.number().refine((val) => [3000, 500, 10000].includes(val), {
-      message: "请选择有效费率等级",
-    }),
-    priceLower: z
-      .string({ message: "最低价格不能为空" })
-      .refine((val) => /^-?\d+(\.\d{1,18})?$/.test(val), {
-        message: "最多支持18位小数",
-      })
-      .refine((val) => Number(val) !== 0, {
-        message: "价格不能为0",
+function createFormSchema(t: ReturnType<typeof useTranslations>) {
+  return z
+    .object({
+      tokenA: z
+        .string()
+        .min(42, { message: t("addressLength") })
+        .max(42, { message: t("addressLength") })
+        .regex(/^0x[a-fA-F0-9]{40}$/, { message: t("validEthereumAddress") }),
+      tokenB: z
+        .string()
+        .min(42, { message: t("addressLength") })
+        .max(42, { message: t("addressLength") })
+        .regex(/^0x[a-fA-F0-9]{40}$/, { message: t("validEthereumAddress") }),
+      fee: z.number().refine((val) => [3000, 500, 10000].includes(val), {
+        message: t("validFeeLevel"),
       }),
-    priceUpper: z
-      .string({ message: "最高价格不能为空" })
-      .refine((val) => /^-?\d+(\.\d{1,18})?$/.test(val), {
-        message: "最多支持18位小数",
-      })
-      .refine((val) => Number(val) !== 0, {
-        message: "价格不能为0",
-      }),
-    price: z
-      .string({ message: "价格不能为空" })
-      .refine((val) => /^-?\d+(\.\d{1,18})?$/.test(val), {
-        message: "最多支持18位小数",
-      })
-      .refine((val) => Number(val) !== 0, {
-        message: "价格不能为0",
-      }),
-  })
-  .superRefine((values, ctx) => {
-    const lower = Number(values.priceLower)
-    const upper = Number(values.priceUpper)
-    if (upper <= lower) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: "最高价格必须大于最低价格",
-        path: ["priceUpper"],
-      })
-    }
-  })
+      priceLower: z
+        .string({ message: t("priceLowerEmpty") })
+        .refine((val) => /^-?\d+(\.\d{1,18})?$/.test(val), {
+          message: t("maxDecimals"),
+        })
+        .refine((val) => Number(val) !== 0, {
+          message: t("priceNotZero"),
+        }),
+      priceUpper: z
+        .string({ message: t("priceUpperEmpty") })
+        .refine((val) => /^-?\d+(\.\d{1,18})?$/.test(val), {
+          message: t("maxDecimals"),
+        })
+        .refine((val) => Number(val) !== 0, {
+          message: t("priceNotZero"),
+        }),
+      price: z
+        .string({ message: t("priceEmpty") })
+        .refine((val) => /^-?\d+(\.\d{1,18})?$/.test(val), {
+          message: t("maxDecimals"),
+        })
+        .refine((val) => Number(val) !== 0, {
+          message: t("priceNotZero"),
+        }),
+    })
+    .superRefine((values, ctx) => {
+      const lower = Number(values.priceLower)
+      const upper = Number(values.priceUpper)
+      if (upper <= lower) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: t("priceUpperGreater"),
+          path: ["priceUpper"],
+        })
+      }
+    })
+}
 
-export type PoolFormType = z.infer<typeof formSchema>
+export type PoolFormType = z.infer<ReturnType<typeof createFormSchema>>
 
 interface PoolFormProps {
-  onSubmit?: (values: z.infer<typeof formSchema>) => void
+  onSubmit?: (values: PoolFormType) => void
 }
 
 const TokenSelectTrigger = ({
@@ -91,28 +94,34 @@ const TokenSelectTrigger = ({
 }: {
   field: ControllerRenderProps<PoolFormType>
   tokensInfo: Record<string, Token>
-}) => (
-  <div className="flex items-center w-full px-3 gap-1.5 border rounded-xl h-12 cursor-pointer text-muted-foreground active:scale-95 transition-all justify-between">
-    {field.value ? (
-      <div className="flex items-center gap-1 -ml-1.5 flex-1 overflow-hidden">
-        <div className="size-7 bg-slate-400 rounded-full flex items-center justify-center">
-          {tokensInfo[field.value]?.name?.slice(-1)}
+}) => {
+  const t = useTranslations("PoolForm")
+  return (
+    <div className="flex items-center w-full px-3 gap-1.5 border rounded-xl h-12 cursor-pointer text-muted-foreground active:scale-95 transition-all justify-between">
+      {field.value ? (
+        <div className="flex items-center gap-1 -ml-1.5 flex-1 overflow-hidden">
+          <div className="size-7 bg-slate-400 rounded-full flex items-center justify-center">
+            {tokensInfo[field.value]?.name?.slice(-1)}
+          </div>
+          <div className="text-muted-foreground truncate text-sm flex-1 text-left">
+            {tokensInfo[field.value]?.name}
+          </div>
         </div>
-        <div className="text-muted-foreground truncate text-sm flex-1 text-left">
-          {tokensInfo[field.value]?.name}
-        </div>
-      </div>
-    ) : (
-      <span className="font-semibold">选择代币</span>
-    )}
-    <ChevronDown />
-  </div>
-)
+      ) : (
+        <span className="font-semibold">{t("selectTokenPair")}</span>
+      )}
+      <ChevronDown />
+    </div>
+  )
+}
 
 const PoolForm = React.forwardRef<
   { submit: () => Promise<void> },
   PoolFormProps
 >(function PoolForm({ onSubmit }: PoolFormProps, ref) {
+  const t = useTranslations("PoolForm")
+  const formSchema = createFormSchema(t)
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -150,7 +159,7 @@ const PoolForm = React.forwardRef<
     <Form {...form}>
       <form className="space-y-3" onSubmit={form.handleSubmit(handleSubmit)}>
         <p className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-          请选择代币对
+          {t("selectTokenPair")}
         </p>
         <div className="flex justify-between gap-2">
           <FormField
@@ -203,7 +212,7 @@ const PoolForm = React.forwardRef<
           name="fee"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>手续费</FormLabel>
+              <FormLabel>{t("fee")}</FormLabel>
               <FormControl>
                 <Select
                   onValueChange={(val) => field.onChange(Number(val))}
@@ -213,9 +222,9 @@ const PoolForm = React.forwardRef<
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value={"500"}>0.05%</SelectItem>
-                    <SelectItem value={"3000"}>0.3%</SelectItem>
-                    <SelectItem value={"10000"}>1%</SelectItem>
+                    <SelectItem value={"500"}>{t("fee500")}</SelectItem>
+                    <SelectItem value={"3000"}>{t("fee3000")}</SelectItem>
+                    <SelectItem value={"10000"}>{t("fee10000")}</SelectItem>
                   </SelectContent>
                 </Select>
               </FormControl>
@@ -229,12 +238,12 @@ const PoolForm = React.forwardRef<
             name="priceLower"
             render={({ field }) => (
               <FormItem className="flex-1">
-                <FormLabel>最低价格</FormLabel>
+                <FormLabel>{t("priceLower")}</FormLabel>
                 <FormControl>
                   <Input type="number" {...field} />
                 </FormControl>
                 <FormMessage />
-                <FormDescription>在价格范围内参与市场交易</FormDescription>
+                <FormDescription>{t("priceLowerDescription")}</FormDescription>
               </FormItem>
             )}
           />
@@ -243,7 +252,7 @@ const PoolForm = React.forwardRef<
             name="priceUpper"
             render={({ field }) => (
               <FormItem className="flex-1">
-                <FormLabel>最高价格</FormLabel>
+                <FormLabel>{t("priceUpper")}</FormLabel>
                 <FormControl>
                   <Input type="number" {...field} />
                 </FormControl>
@@ -265,7 +274,7 @@ const PoolForm = React.forwardRef<
             return (
               <FormItem>
                 <FormLabel>
-                  初始价格
+                  {t("initialPrice")}
                   <span className="ml-2">
                     ({token0Symbol}/{token1Symbol})
                   </span>
@@ -274,7 +283,10 @@ const PoolForm = React.forwardRef<
                   <div className="flex w-full items-center space-x-2">
                     <Input className="flex-1" type="number" {...field} />
                     <div className="whitespace-nowrap text-muted-foreground font-semibold text-sm">
-                      {token1Symbol} 每 {token0Symbol}
+                      {t("priceDescription", {
+                        token0Symbol: token0Symbol ?? "",
+                        token1Symbol: token1Symbol ?? "",
+                      })}
                     </div>
                   </div>
                 </FormControl>

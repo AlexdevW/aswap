@@ -12,6 +12,7 @@ import {
 } from "@workspace/ui/components/tooltip"
 import { Info, Settings2, AlertTriangle } from "lucide-react"
 import { useState } from "react"
+import { useTranslations } from "next-intl"
 
 export interface SettingsProps {
   onDeadlineChange?: (minutes: number) => void
@@ -22,6 +23,7 @@ export default function Settings({
   onDeadlineChange,
   onSlippageChange,
 }: SettingsProps) {
+  const t = useTranslations("Settings")
   const [slippage, setSlippage] = useState<number | undefined>(0.5)
   const [deadline, setDeadline] = useState<number>(30)
 
@@ -43,7 +45,7 @@ export default function Settings({
     <TooltipProvider delayDuration={200}>
       <div className="flex justify-between items-center w-full px-1.5 py-1">
         <div className="px-2 py-1 rounded-full text-base leading-4 tracking-tight font-medium text-muted-foreground">
-          swap
+          {t("swap")}
         </div>
         <Popover>
           <PopoverTrigger asChild>
@@ -59,13 +61,13 @@ export default function Settings({
           >
             <div className="flex gap-4 justify-between items-center mb-4">
               <div className="text-sm text-muted-foreground whitespace-nowrap flex items-center gap-1">
-                <span>滑点上限</span>
+                <span>{t("slippageLimit")}</span>
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Info size={16} />
                   </TooltipTrigger>
                   <TooltipContent className="max-w-64">
-                    如果价格变动超过滑点百分比，则你的交易将撤回。
+                    {t("slippageInfo")}
                   </TooltipContent>
                 </Tooltip>
               </div>
@@ -74,7 +76,7 @@ export default function Settings({
                   className="absolute left-1 top-1/2 -translate-y-1/2 text-sm rounded-full bg-secondary px-2 py-0.5 cursor-pointer hover:bg-secondary/80 transition-colors"
                   onClick={() => setSlippage(0.5)}
                 >
-                  自动
+                  {t("auto")}
                 </span>
                 <Input
                   className="w-28 rounded-full h-8 pr-6 pl-12 text-right"
@@ -91,19 +93,18 @@ export default function Settings({
             {isHighSlippage && (
               <div className="flex items-center gap-1 text-amber-500 mt-0.5 mb-3 text-xs pl-1">
                 <AlertTriangle size={14} />
-                <span>滑点设置过高，可能导致交易损失较大</span>
+                <span>{t("highSlippageWarning")}</span>
               </div>
             )}
             <div className="flex gap-2 justify-between items-center">
               <div className="text-sm text-muted-foreground whitespace-nowrap flex items-center gap-1">
-                <span>交易截止日期</span>
+                <span>{t("transactionDeadline")}</span>
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Info size={16} />
                   </TooltipTrigger>
                   <TooltipContent className="max-w-64">
-                    如果你的交易处于待处理状态超过该时间，则交易将被撤销。（最长时间：3
-                    天）。
+                    {t("deadlineInfo")}
                   </TooltipContent>
                 </Tooltip>
               </div>

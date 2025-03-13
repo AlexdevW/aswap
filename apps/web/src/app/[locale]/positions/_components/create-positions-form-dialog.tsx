@@ -18,6 +18,7 @@ import {
 } from "@/components/responsive-dialog"
 import { Dialog } from "@workspace/ui/components/dialog"
 import { handleTransactionError } from "@/lib/error-handlers"
+import { useTranslations } from "next-intl"
 
 // 建议：这些类型可以移到单独的类型文件中
 interface CreatePositionsDialogProps
@@ -37,14 +38,6 @@ enum TransactionStatus {
   CREATING_POSITION = "creating_position",
 }
 
-// 使用 map 来替代 switch 语句
-const buttonTextMap: Record<TransactionStatus, string> = {
-  [TransactionStatus.IDLE]: "提交",
-  [TransactionStatus.APPROVING_TOKEN0]: "正在授权第一个代币...",
-  [TransactionStatus.APPROVING_TOKEN1]: "正在授权第二个代币...",
-  [TransactionStatus.CREATING_POSITION]: "正在创建头寸...",
-}
-
 export function CreatePositionsDialog({
   showTrigger = true,
   onSuccess,
@@ -58,6 +51,8 @@ export function CreatePositionsDialog({
     TransactionStatus.IDLE
   )
   const formRef = React.useRef<{ submit: () => Promise<void> }>(null)
+
+  const t = useTranslations("CreatePositionsDialog")
 
   // 判断是否为受控模式
   const open = controlledOpen !== undefined ? controlledOpen : uncontrolledOpen
@@ -115,20 +110,21 @@ export function CreatePositionsDialog({
       )
 
       if (allowance < amount) {
-        // 添加用户反馈
-        toast.info(`正在授权${isToken0 ? "第一" : "第二"}个代币...`)
+        toast.info(t(`authorizingToken${isToken0 ? "0" : "1"}`))
 
         await writeErc20Approve({
           address: tokenAddress,
           args: [getContractAddress("PositionManager"), amount - allowance],
         })
 
-        toast.success(`${isToken0 ? "第一" : "第二"}个代币授权成功`)
+        toast.success(t(`token${isToken0 ? "0" : "1"}Authorized`))
       }
     } catch (error) {
-      // console.error(`Error approving ${isToken0 ? "token0" : "token1"}:`, error)
       throw new Error(
-        `授权${isToken0 ? "第一" : "第二"}个代币失败: ${error instanceof Error ? error.message : "未知错误"}`
+        t(`tokenAuthorizationFailed`, {
+          token: isToken0 ? "0" : "1",
+          error: error instanceof Error ? error.message : t("unknownError"),
+        })
       )
     }
   }
@@ -141,7 +137,7 @@ export function CreatePositionsDialog({
       tokenA < tokenB ? [tokenA, tokenB] : [tokenB, tokenA]
 
     if (account?.address === undefined) {
-      toast.error("请先连接钱包")
+      toast.error(t("connectWallet"))
       return
     }
 
@@ -157,7 +153,7 @@ export function CreatePositionsDialog({
 
       // 创建头寸
       setTxStatus(TransactionStatus.CREATING_POSITION)
-      toast.info("正在创建头寸...")
+      toast.info(t("creatingPosition"))
 
       await writeContractAsync({
         address: getContractAddress("PositionManager"),
@@ -175,7 +171,7 @@ export function CreatePositionsDialog({
       })
 
       handleOpenChange(false)
-      toast.success("创建头寸成功")
+      toast.success(t("positionCreated"))
       onSuccess?.()
     } catch (error: unknown) {
       toast.error(handleTransactionError(error))
@@ -190,6 +186,13 @@ export function CreatePositionsDialog({
 
   const isCreatePending = txStatus !== TransactionStatus.IDLE
 
+  const buttonTextMap: Record<TransactionStatus, string> = {
+    [TransactionStatus.IDLE]: t("submit"),
+    [TransactionStatus.APPROVING_TOKEN0]: t("approvingToken0"),
+    [TransactionStatus.APPROVING_TOKEN1]: t("approvingToken1"),
+    [TransactionStatus.CREATING_POSITION]: t("creatingPosition"),
+  }
+
   return (
     <ResponsiveDialog
       open={open}
@@ -198,19 +201,19 @@ export function CreatePositionsDialog({
       trigger={
         <Button variant="outline" size="sm">
           <PlusIcon className="size-4" aria-hidden="true" />
-          添加头寸
+          {t("addNewPosition")}
         </Button>
       }
-      title="创建头寸"
+      title={t("createPosition")}
       footer={
         <>
           <DialogCloseButton>
             <Button variant="outline" disabled={isCreatePending}>
-              取消
+              {t("cancel")}
             </Button>
           </DialogCloseButton>
           <Button
-            aria-label="添加新头寸"
+            aria-label={t("addNewPosition")}
             onClick={() => formRef.current?.submit()}
             disabled={isCreatePending}
           >

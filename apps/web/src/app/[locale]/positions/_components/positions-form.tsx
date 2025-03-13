@@ -20,27 +20,31 @@ import { Token } from "@/types/swap"
 import useTokenBalance from "@/hooks/use-token-balance"
 import { cn } from "@workspace/ui/lib/utils"
 import { parseAmountToBigInt } from "@/lib/utils"
+import { useTranslations } from "next-intl"
 
-const formSchema = z.object({
-  tokenA: z
-    .string()
-    .min(42, "地址长度必须为42字符")
-    .max(42, "地址长度必须为42字符")
-    .regex(/^0x[a-fA-F0-9]{40}$/, "必须是有效的以太坊地址"),
-  tokenB: z
-    .string()
-    .min(42, "地址长度必须为42字符")
-    .max(42, "地址长度必须为42字符")
-    .regex(/^0x[a-fA-F0-9]{40}$/, "必须是有效的以太坊地址"),
-  index: z.number().int().min(0, "索引不能小于0"),
-  amount0Desired: z.string().min(1, "请输入存入代币数量"),
-  amount1Desired: z.string().min(1, "请输入存入代币数量"),
-})
+const formSchema = (t: ReturnType<typeof useTranslations>) =>
+  z.object({
+    tokenA: z
+      .string()
+      .min(42, { message: t("addressLength") })
+      .max(42, { message: t("addressLength") })
+      .regex(/^0x[a-fA-F0-9]{40}$/, { message: t("validEthereumAddress") }),
+    tokenB: z
+      .string()
+      .min(42, { message: t("addressLength") })
+      .max(42, { message: t("validEthereumAddress") }),
+    index: z
+      .number()
+      .int()
+      .min(0, { message: t("indexMin") }),
+    amount0Desired: z.string().min(1, { message: t("enterAmount") }),
+    amount1Desired: z.string().min(1, { message: t("enterAmount") }),
+  })
 
-export type PositionsFormType = z.infer<typeof formSchema>
+export type PositionsFormType = z.infer<ReturnType<typeof formSchema>>
 
 interface PositionsFormProps {
-  onSubmit?: (values: z.infer<typeof formSchema>) => void
+  onSubmit?: (values: PositionsFormType) => void
   defaultValues?: PositionsFormType
 }
 
@@ -55,6 +59,7 @@ const TokenInput = ({
   balance?: string
   isInsufficientBalance?: boolean
 }) => {
+  const t = useTranslations("PositionsForm")
   return (
     <div className="py-2 pl-2 pr-4 bg-slate-200 rounded-xl">
       <div className="flex items-center gap-2 w-full justify-between">
@@ -106,7 +111,7 @@ const TokenInput = ({
             className="py-1 px-2 rounded-3xl h-auto ml-2 bg-white hover:bg-white border-none active:scale-95"
             onClick={() => field.onChange(balance)}
           >
-            最高
+            {t("max")}
           </Button>
         </span>
       </div>
@@ -139,8 +144,9 @@ const PositionsForm = React.forwardRef<
   { submit: () => Promise<void> },
   PositionsFormProps
 >(function PositionsForm({ onSubmit, defaultValues }: PositionsFormProps, ref) {
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const t = useTranslations("PositionsForm")
+  const form = useForm<PositionsFormType>({
+    resolver: zodResolver(formSchema(t)),
     defaultValues,
   })
 
@@ -162,7 +168,7 @@ const PositionsForm = React.forwardRef<
     parseAmountToBigInt(amount1Desired) >
     parseAmountToBigInt(tokenBBalance ?? "0")
 
-  function handleSubmit(values: z.infer<typeof formSchema>) {
+  function handleSubmit(values: PositionsFormType) {
     if (isInsufficientBalanceA || isInsufficientBalanceB) {
       return
     }
@@ -188,7 +194,7 @@ const PositionsForm = React.forwardRef<
     <Form {...form}>
       <form className="space-y-3" onSubmit={form.handleSubmit(handleSubmit)}>
         <p className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-          代币对
+          {t("selectTokenPair")}
         </p>
         <div className="flex justify-between gap-2">
           <FormField
@@ -239,7 +245,7 @@ const PositionsForm = React.forwardRef<
           />
         </div>
         <p className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-          存入代币
+          {t("enterAmount")}
         </p>
         <FormField
           control={form.control}
@@ -275,7 +281,7 @@ const PositionsForm = React.forwardRef<
             </FormItem>
           )}
         />
-        <FormDescription>指定你的流动性资产贡献的代币金额。</FormDescription>
+        <FormDescription>{t("specifyLiquidity")}</FormDescription>
       </form>
     </Form>
   )

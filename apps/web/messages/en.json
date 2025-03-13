@@ -6,5 +6,119 @@
     "LocaleSwitcher": {
         "label": "Change language",
         "locale": "{locale, select, zh {🇨🇳 中文} en {🇺🇸 English} other {Unknown}}"
+    },
+    "Swap": {
+        "selectToken": "Select token",
+        "insufficientLiquidity": "{token} liquidity is insufficient",
+        "enterAmount": "Enter amount",
+        "noLiquidity": "No liquidity for the current pair",
+        "confirmingQuote": "Confirming final quote...",
+        "insufficientBalance": "Insufficient {token}",
+        "swap": "Swap",
+        "sell": "Sell",
+        "buy": "Buy",
+        "max": "Max"
+    },
+    "Settings": {
+        "swap": "Swap",
+        "slippageLimit": "Slippage Limit",
+        "slippageInfo": "If the price changes more than this percentage, your transaction will be reverted.",
+        "highSlippageWarning": "High slippage setting may result in significant trading losses.",
+        "transactionDeadline": "Transaction Deadline",
+        "deadlineInfo": "If your transaction is pending for longer than this time, it will be canceled. (Max: 3 days)",
+        "auto": "Auto"
+    },
+    "Faucet": {
+        "getTestToken": "Get Test Token"
+    },
+    "Pool": {
+        "title": "Pool"
+    },
+    "PoolTableColumns": {
+        "pool": "Pool",
+        "price": "Price",
+        "fee": "Fee",
+        "tickLower": "Tick Lower",
+        "tickUpper": "Tick Upper",
+        "tick": "Tick",
+        "liquidity": "Liquidity",
+        "actions": "Actions"
+    },
+    "PoolTableToolbarActions": {
+        "positions": "Positions"
+    },
+    "PoolForm": {
+        "selectTokenPair": "Select Token Pair",
+        "fee": "Fee",
+        "fee500": "0.05%",
+        "fee3000": "0.3%",
+        "fee10000": "1%",
+        "priceLower": "Price Lower",
+        "priceUpper": "Price Upper",
+        "initialPrice": "Initial Price",
+        "priceLowerDescription": "Participate in market trading within the price range",
+        "priceDescription": "{token1Symbol} per {token0Symbol}",
+        "addressLength": "Address must be 42 characters long",
+        "validEthereumAddress": "Must be a valid Ethereum address",
+        "validFeeLevel": "Please select a valid fee level",
+        "priceLowerEmpty": "Lower price cannot be empty",
+        "maxDecimals": "Up to 18 decimal places are supported",
+        "priceNotZero": "Price cannot be zero",
+        "priceUpperEmpty": "Upper price cannot be empty",
+        "priceEmpty": "Price cannot be empty",
+        "priceUpperGreater": "Upper price must be greater than lower price"
+    },
+    "CreatePoolDialog": {
+        "submit": "Submit",
+        "creatingPool": "Creating Pool...",
+        "createPool": "Create Pool",
+        "cancel": "Cancel",
+        "addNewPool": "Add New Pool",
+        "successMessage": "Pool created successfully",
+        "new": "New"
+    },
+    "CreatePositionsDialog": {
+        "submit": "Submit",
+        "approvingToken0": "Approving first token...",
+        "approvingToken1": "Approving second token...",
+        "creatingPosition": "Creating position...",
+        "authorizingToken0": "Authorizing first token...",
+        "authorizingToken1": "Authorizing second token...",
+        "token0Authorized": "First token authorized successfully",
+        "token1Authorized": "Second token authorized successfully",
+        "tokenAuthorizationFailed": "Failed to authorize token {token}: {error}",
+        "unknownError": "Unknown error",
+        "connectWallet": "Please connect your wallet first",
+        "positionCreated": "Position created successfully",
+        "createPosition": "Create Position",
+        "cancel": "Cancel",
+        "addNewPosition": "Add New Position"
+    },
+    "PositionsForm": {
+        "selectTokenPair": "Select Token Pair",
+        "enterAmount": "Enter amount",
+        "addressLength": "Address must be 42 characters long",
+        "validEthereumAddress": "Must be a valid Ethereum address",
+        "indexMin": "Index cannot be less than 0",
+        "specifyLiquidity": "Specify the amount of tokens you are contributing to the liquidity.",
+        "max": "Max"
+    },
+    "PositionsTableColumns": {
+        "id": "ID",
+        "owner": "Owner",
+        "pool": "Pool",
+        "fee": "Fee",
+        "index": "Index",
+        "liquidity": "Liquidity",
+        "tickLower": "Tick Lower",
+        "tickUpper": "Tick Upper",
+        "tokensOwed0": "Tokens Owed 0",
+        "tokensOwed1": "Tokens Owed 1",
+        "feeGrowthInside0": "Fee Growth Inside 0",
+        "feeGrowthInside1": "Fee Growth Inside 1",
+        "actions": "Actions",
+        "remove": "Remove",
+        "collect": "Collect",
+        "error": "Error: {error}"
     }
 }

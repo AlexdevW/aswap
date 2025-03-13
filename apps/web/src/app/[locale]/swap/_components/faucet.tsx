@@ -4,10 +4,12 @@ import { getContractAddress } from "@/lib/utils"
 import { Button } from "@workspace/ui/components/button"
 import { Separator } from "@workspace/ui/components/separator"
 import { toast } from "@workspace/ui/components/sonner"
+import { useTranslations } from "next-intl"
 import React from "react"
 import { useAccount } from "wagmi"
 
 export default function Faucet() {
+  const t = useTranslations("Faucet")
   const account = useAccount()
   const [loading, setLoading] = React.useState(false)
   const { writeContractAsync } = useWriteDebugTokenMint()
@@ -38,7 +40,7 @@ export default function Faucet() {
 
   return (
     <div className="flex flex-col ">
-      <h2 className="text-center mb-2">领取测试代币</h2>
+      <h2 className="text-center mb-2">{t("getTestToken")}</h2>
       <div className="flex items-center justify-center space-x-4 text-sm">
         <Button
           variant="outline"

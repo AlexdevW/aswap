@@ -2,7 +2,7 @@
 
 import { DataTable } from "@workspace/ui/components/data-table"
 import { useDataTable } from "@workspace/ui/hooks/use-data-table"
-import { getColumns } from "./positions-table-columns"
+import { useColumns } from "./positions-table-columns"
 import React from "react"
 import {
   useReadPositionManagerGetAllPositions,
@@ -26,23 +26,13 @@ export default function PositionsTable() {
     useWritePositionManagerCollect()
   const { data: tokensInfo } = useDebugTokensInfo()
 
-  const columns = React.useMemo(
-    () =>
-      getColumns({
-        account,
-        refetch,
-        writePositionManagerBurn,
-        writePositionManagerCollect,
-        tokensInfo,
-      }),
-    [
-      account,
-      refetch,
-      writePositionManagerBurn,
-      writePositionManagerCollect,
-      tokensInfo,
-    ]
-  )
+  const columns = useColumns({
+    account,
+    refetch,
+    writePositionManagerBurn,
+    writePositionManagerCollect,
+    tokensInfo,
+  })
 
   const { table } = useDataTable({
     data: data as Positions[],
