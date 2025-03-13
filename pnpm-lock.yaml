@@ -77,7 +77,7 @@ importers:
         version: 8.21.2(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@uniswap/v3-sdk':
         specifier: ^3.18.1
-        version: 3.24.1(hardhat@2.22.19(bufferutil@4.0.9)(ts-node@10.9.2(@types/node@22.13.5)(typescript@5.7.3))(typescript@5.7.3)(utf-8-validate@5.0.10))
+        version: 3.24.1(hardhat@2.22.19(bufferutil@4.0.9)(ts-node@10.9.2(@types/node@20.17.19)(typescript@5.7.3))(typescript@5.7.3)(utf-8-validate@5.0.10))
       '@workspace/ui':
         specifier: workspace:*
         version: link:../../packages/ui
@@ -96,6 +96,9 @@ importers:
       next:
         specifier: ^15.1.0
         version: 15.2.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+      next-intl:
+        specifier: ^4.0.1
+        version: 4.0.1(next@15.2.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react@19.0.0)(typescript@5.7.3)
       next-themes:
         specifier: ^0.4.3
         version: 0.4.4(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
@@ -695,6 +698,24 @@ packages:
 
   '@floating-ui/utils@0.2.9':
     resolution: {integrity: sha512-MDWhGtE+eHw5JW7lq4qhc5yRLS11ERl1c7Z6Xd0a58DozHES6EnNNwUWbMiG4J9Cgj053Bhk8zvlhFYKVhULwg==}
+
+  '@formatjs/ecma402-abstract@2.3.3':
+    resolution: {integrity: sha512-pJT1OkhplSmvvr6i3CWTPvC/FGC06MbN5TNBfRO6Ox62AEz90eMq+dVvtX9Bl3jxCEkS0tATzDarRZuOLw7oFg==}
+
+  '@formatjs/fast-memoize@2.2.6':
+    resolution: {integrity: sha512-luIXeE2LJbQnnzotY1f2U2m7xuQNj2DA8Vq4ce1BY9ebRZaoPB1+8eZ6nXpLzsxuW5spQxr7LdCg+CApZwkqkw==}
+
+  '@formatjs/icu-messageformat-parser@2.11.1':
+    resolution: {integrity: sha512-o0AhSNaOfKoic0Sn1GkFCK4MxdRsw7mPJ5/rBpIqdvcC7MIuyUSW8WChUEvrK78HhNpYOgqCQbINxCTumJLzZA==}
+
+  '@formatjs/icu-skeleton-parser@1.8.13':
+    resolution: {integrity: sha512-N/LIdTvVc1TpJmMt2jVg0Fr1F7Q1qJPdZSCs19unMskCmVQ/sa0H9L8PWt13vq+gLdLg1+pPsvBLydL1Apahjg==}
+
+  '@formatjs/intl-localematcher@0.5.10':
+    resolution: {integrity: sha512-af3qATX+m4Rnd9+wHcjJ4w2ijq+rAVP3CCinJQvFv1kgSu1W6jypUmvleJxcewdxmutM8dmIRZFxO/IQBZmP2Q==}
+
+  '@formatjs/intl-localematcher@0.6.0':
+    resolution: {integrity: sha512-4rB4g+3hESy1bHSBG3tDFaMY2CH67iT7yne1e+0CLTsGLDcmoEWWpJjjpWVaYgYfYuohIRuo0E+N536gd2ZHZA==}
 
   '@hookform/resolvers@4.1.2':
     resolution: {integrity: sha512-wl6H9c9wLOZMJAqGLEVKzbCkxJuV+BYuLFZFCQtCwMe0b3qQk4kUBd/ZAj13SwcSqcx86rCgSCyngQfmA6DOWg==}
@@ -1803,6 +1824,9 @@ packages:
   '@safe-global/safe-gateway-typescript-sdk@3.22.9':
     resolution: {integrity: sha512-7ojVK/crhOaGowEO8uYWaopZzcr5rR76emgllGIfjCLR70aY4PbASpi9Pbs+7jIRzPDBBkM0RBo+zYx5UduX8Q==}
     engines: {node: '>=16'}
+
+  '@schummar/icu-type-parser@1.21.5':
+    resolution: {integrity: sha512-bXHSaW5jRTmke9Vd0h5P7BtWZG9Znqb8gSDxZnxaGSJnGwPLDPfS+3g0BKzeWqzgZPsIVZkM7m2tbo18cm5HBw==}
 
   '@scure/base@1.1.9':
     resolution: {integrity: sha512-8YKhl8GHiNI/pU2VMaofa2Tor7PJRAjwQLBBuilkJ9L5+13yVbC7JO/wS7piioAvPSwR3JKM1IJ/u4xQzbcXKg==}
@@ -2934,6 +2958,9 @@ packages:
   decimal.js-light@2.5.1:
     resolution: {integrity: sha512-qIMFpTMZmny+MMIitAB6D7iVPEorVw6YQRWkvarTkT4tBeSLLiHzcwj6q0MmYSFCiVpiqPJTJEYIrpcPzVEIvg==}
 
+  decimal.js@10.5.0:
+    resolution: {integrity: sha512-8vDa8Qxvr/+d94hSh5P3IJwI5t8/c0KsMp+g8bNw9cY2icONa5aPfvKeieW1WlG0WQYwwhJ7mjui2xtiePQSXw==}
+
   decode-uri-component@0.2.2:
     resolution: {integrity: sha512-FqUYQ+8o158GyGTrMFJms9qh3CqTKvAqgqsTnkLI8sKu0028orqBhxNMFkFen0zGyg6epACD32pjVk58ngIErQ==}
     engines: {node: '>=0.10'}
@@ -3734,6 +3761,9 @@ packages:
     resolution: {integrity: sha512-agE4QfB2Lkp9uICn7BAqoscw4SZP9kTE2hxiFI3jBPmXJfdqiahTbUuKGsMoN2GtqL9AxhYioAcVvgsb1HvRbA==}
     engines: {node: '>= 0.10'}
 
+  intl-messageformat@10.7.15:
+    resolution: {integrity: sha512-LRyExsEsefQSBjU2p47oAheoKz+EOJxSLDdjOaEjdriajfHsMXOmV/EhMvYSg9bAgCUHasuAC+mcUBe/95PfIg==}
+
   io-ts@1.10.4:
     resolution: {integrity: sha512-b23PteSnYXSONJ6JQXRAlvJhuw8KOtkqa87W4wDtvMrud/DTJd5X+NpOOI+O/zZwVq6v0VLAaJ+1EDViKEuN9g==}
 
@@ -4236,12 +4266,26 @@ packages:
     engines: {node: '>=10'}
     hasBin: true
 
+  negotiator@1.0.0:
+    resolution: {integrity: sha512-8Ofs/AUQh8MaEcrlq5xOX0CQ9ypTF5dl78mjlMNfOK08fzpgTHQRQPBxcPlEtIw0yRpws+Zo/3r+5WRby7u3Gg==}
+    engines: {node: '>= 0.6'}
+
   neo-async@2.6.2:
     resolution: {integrity: sha512-Yd3UES5mWCSqR+qNT93S3UoYUkqAZ9lLg8a7g9rimsWmYGK8cVToA4/sF3RrshdyV3sAGMXVUmpMYOw+dLpOuw==}
 
   netmask@2.0.2:
     resolution: {integrity: sha512-dBpDMdxv9Irdq66304OLfEmQ9tbNRFnFTuZiLo+bD+r332bBmMJ8GBLXklIXXgxd3+v9+KUnZaUR5PJMa75Gsg==}
     engines: {node: '>= 0.4.0'}
+
+  next-intl@4.0.1:
+    resolution: {integrity: sha512-6lqw8vv3GsjQ13lxEfgjBj7GW6kdmotiqRzDH4gQ18CGhvCwbJoj1kc5szViZH0iQZ0g8GJUque2xt7WOwqT9Q==}
+    peerDependencies:
+      next: ^12.0.0 || ^13.0.0 || ^14.0.0 || ^15.0.0
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0 || >=19.0.0-rc <19.0.0 || ^19.0.0
+      typescript: ^5.0.0
+    peerDependenciesMeta:
+      typescript:
+        optional: true
 
   next-themes@0.4.4:
     resolution: {integrity: sha512-LDQ2qIOJF0VnuVrrMSMLrWGjRMkq+0mpgl6e0juCLqdJ+oo8Q84JRWT6Wh11VDQKkMMe+dVzDKLWs5n87T+PkQ==}
@@ -5591,6 +5635,11 @@ packages:
       '@types/react':
         optional: true
 
+  use-intl@4.0.1:
+    resolution: {integrity: sha512-UdwGqRI6M0asJK3E0+GtwJI8zrwr2yRQLtcHALMlDwUUTlGZNSCLtr2G/E4aoDfXiODbSBQwQFNco0iItp1mIA==}
+    peerDependencies:
+      react: ^17.0.0 || ^18.0.0 || >=19.0.0-rc <19.0.0 || ^19.0.0
+
   use-sidecar@1.1.3:
     resolution: {integrity: sha512-Fedw0aZvkhynoPYlA5WXrMCAMm+nSWdZt6lzJQ7Ok8S6Q+VsHmHpRWndVRJ8Be0ZbkfPc5LRYH+5XrzXcEeLRQ==}
     engines: {node: '>=10'}
@@ -6387,6 +6436,36 @@ snapshots:
       react-dom: 19.0.0(react@19.0.0)
 
   '@floating-ui/utils@0.2.9': {}
+
+  '@formatjs/ecma402-abstract@2.3.3':
+    dependencies:
+      '@formatjs/fast-memoize': 2.2.6
+      '@formatjs/intl-localematcher': 0.6.0
+      decimal.js: 10.5.0
+      tslib: 2.8.1
+
+  '@formatjs/fast-memoize@2.2.6':
+    dependencies:
+      tslib: 2.8.1
+
+  '@formatjs/icu-messageformat-parser@2.11.1':
+    dependencies:
+      '@formatjs/ecma402-abstract': 2.3.3
+      '@formatjs/icu-skeleton-parser': 1.8.13
+      tslib: 2.8.1
+
+  '@formatjs/icu-skeleton-parser@1.8.13':
+    dependencies:
+      '@formatjs/ecma402-abstract': 2.3.3
+      tslib: 2.8.1
+
+  '@formatjs/intl-localematcher@0.5.10':
+    dependencies:
+      tslib: 2.8.1
+
+  '@formatjs/intl-localematcher@0.6.0':
+    dependencies:
+      tslib: 2.8.1
 
   '@hookform/resolvers@4.1.2(react-hook-form@7.54.2(react@19.0.0))':
     dependencies:
@@ -7767,6 +7846,8 @@ snapshots:
 
   '@safe-global/safe-gateway-typescript-sdk@3.22.9': {}
 
+  '@schummar/icu-type-parser@1.21.5': {}
+
   '@scure/base@1.1.9': {}
 
   '@scure/base@1.2.4': {}
@@ -8198,6 +8279,17 @@ snapshots:
       tiny-invariant: 1.3.3
       toformat: 2.0.0
 
+  '@uniswap/swap-router-contracts@1.3.1(hardhat@2.22.19(bufferutil@4.0.9)(ts-node@10.9.2(@types/node@20.17.19)(typescript@5.7.3))(typescript@5.7.3)(utf-8-validate@5.0.10))':
+    dependencies:
+      '@openzeppelin/contracts': 3.4.2-solc-0.7
+      '@uniswap/v2-core': 1.0.1
+      '@uniswap/v3-core': 1.0.1
+      '@uniswap/v3-periphery': 1.4.4
+      dotenv: 14.3.2
+      hardhat-watcher: 2.5.0(hardhat@2.22.19(bufferutil@4.0.9)(ts-node@10.9.2(@types/node@20.17.19)(typescript@5.7.3))(typescript@5.7.3)(utf-8-validate@5.0.10))
+    transitivePeerDependencies:
+      - hardhat
+
   '@uniswap/swap-router-contracts@1.3.1(hardhat@2.22.19(bufferutil@4.0.9)(ts-node@10.9.2(@types/node@22.13.5)(typescript@5.7.3))(typescript@5.7.3)(utf-8-validate@5.0.10))':
     dependencies:
       '@openzeppelin/contracts': 3.4.2-solc-0.7
@@ -8222,6 +8314,19 @@ snapshots:
       '@uniswap/v2-core': 1.0.1
       '@uniswap/v3-core': 1.0.1
       base64-sol: 1.0.1
+
+  '@uniswap/v3-sdk@3.24.1(hardhat@2.22.19(bufferutil@4.0.9)(ts-node@10.9.2(@types/node@20.17.19)(typescript@5.7.3))(typescript@5.7.3)(utf-8-validate@5.0.10))':
+    dependencies:
+      '@ethersproject/abi': 5.8.0
+      '@ethersproject/solidity': 5.8.0
+      '@uniswap/sdk-core': 7.6.0
+      '@uniswap/swap-router-contracts': 1.3.1(hardhat@2.22.19(bufferutil@4.0.9)(ts-node@10.9.2(@types/node@20.17.19)(typescript@5.7.3))(typescript@5.7.3)(utf-8-validate@5.0.10))
+      '@uniswap/v3-periphery': 1.4.4
+      '@uniswap/v3-staker': 1.0.0
+      tiny-invariant: 1.3.3
+      tiny-warning: 1.0.3
+    transitivePeerDependencies:
+      - hardhat
 
   '@uniswap/v3-sdk@3.24.1(hardhat@2.22.19(bufferutil@4.0.9)(ts-node@10.9.2(@types/node@22.13.5)(typescript@5.7.3))(typescript@5.7.3)(utf-8-validate@5.0.10))':
     dependencies:
@@ -9546,6 +9651,8 @@ snapshots:
 
   decimal.js-light@2.5.1: {}
 
+  decimal.js@10.5.0: {}
+
   decode-uri-component@0.2.2: {}
 
   dedent@0.7.0: {}
@@ -10473,10 +10580,70 @@ snapshots:
       - debug
       - utf-8-validate
 
+  hardhat-watcher@2.5.0(hardhat@2.22.19(bufferutil@4.0.9)(ts-node@10.9.2(@types/node@20.17.19)(typescript@5.7.3))(typescript@5.7.3)(utf-8-validate@5.0.10)):
+    dependencies:
+      chokidar: 3.6.0
+      hardhat: 2.22.19(bufferutil@4.0.9)(ts-node@10.9.2(@types/node@20.17.19)(typescript@5.7.3))(typescript@5.7.3)(utf-8-validate@5.0.10)
+
   hardhat-watcher@2.5.0(hardhat@2.22.19(bufferutil@4.0.9)(ts-node@10.9.2(@types/node@22.13.5)(typescript@5.7.3))(typescript@5.7.3)(utf-8-validate@5.0.10)):
     dependencies:
       chokidar: 3.6.0
       hardhat: 2.22.19(bufferutil@4.0.9)(ts-node@10.9.2(@types/node@22.13.5)(typescript@5.7.3))(typescript@5.7.3)(utf-8-validate@5.0.10)
+
+  hardhat@2.22.19(bufferutil@4.0.9)(ts-node@10.9.2(@types/node@20.17.19)(typescript@5.7.3))(typescript@5.7.3)(utf-8-validate@5.0.10):
+    dependencies:
+      '@ethersproject/abi': 5.8.0
+      '@metamask/eth-sig-util': 4.0.1
+      '@nomicfoundation/edr': 0.8.0
+      '@nomicfoundation/ethereumjs-common': 4.0.4
+      '@nomicfoundation/ethereumjs-tx': 5.0.4
+      '@nomicfoundation/ethereumjs-util': 9.0.4
+      '@nomicfoundation/solidity-analyzer': 0.1.2
+      '@sentry/node': 5.30.0
+      '@types/bn.js': 5.1.6
+      '@types/lru-cache': 5.1.1
+      adm-zip: 0.4.16
+      aggregate-error: 3.1.0
+      ansi-escapes: 4.3.2
+      boxen: 5.1.2
+      chokidar: 4.0.3
+      ci-info: 2.0.0
+      debug: 4.4.0(supports-color@8.1.1)
+      enquirer: 2.4.1
+      env-paths: 2.2.1
+      ethereum-cryptography: 1.2.0
+      ethereumjs-abi: 0.6.8
+      find-up: 5.0.0
+      fp-ts: 1.19.3
+      fs-extra: 7.0.1
+      immutable: 4.3.7
+      io-ts: 1.10.4
+      json-stream-stringify: 3.1.6
+      keccak: 3.0.4
+      lodash: 4.17.21
+      mnemonist: 0.38.5
+      mocha: 10.8.2
+      p-map: 4.0.0
+      picocolors: 1.1.1
+      raw-body: 2.5.2
+      resolve: 1.17.0
+      semver: 6.3.1
+      solc: 0.8.26(debug@4.4.0)
+      source-map-support: 0.5.21
+      stacktrace-parser: 0.1.11
+      tinyglobby: 0.2.12
+      tsort: 0.0.1
+      undici: 5.28.5
+      uuid: 8.3.2
+      ws: 7.5.10(bufferutil@4.0.9)(utf-8-validate@5.0.10)
+    optionalDependencies:
+      ts-node: 10.9.2(@types/node@20.17.19)(typescript@5.7.3)
+      typescript: 5.7.3
+    transitivePeerDependencies:
+      - bufferutil
+      - c-kzg
+      - supports-color
+      - utf-8-validate
 
   hardhat@2.22.19(bufferutil@4.0.9)(ts-node@10.9.2(@types/node@22.13.5)(typescript@5.7.3))(typescript@5.7.3)(utf-8-validate@5.0.10):
     dependencies:
@@ -10702,6 +10869,13 @@ snapshots:
       side-channel: 1.1.0
 
   interpret@1.4.0: {}
+
+  intl-messageformat@10.7.15:
+    dependencies:
+      '@formatjs/ecma402-abstract': 2.3.3
+      '@formatjs/fast-memoize': 2.2.6
+      '@formatjs/icu-messageformat-parser': 2.11.1
+      tslib: 2.8.1
 
   io-ts@1.10.4:
     dependencies:
@@ -11193,9 +11367,21 @@ snapshots:
       split2: 3.2.2
       through2: 4.0.2
 
+  negotiator@1.0.0: {}
+
   neo-async@2.6.2: {}
 
   netmask@2.0.2: {}
+
+  next-intl@4.0.1(next@15.2.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react@19.0.0)(typescript@5.7.3):
+    dependencies:
+      '@formatjs/intl-localematcher': 0.5.10
+      negotiator: 1.0.0
+      next: 15.2.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+      react: 19.0.0
+      use-intl: 4.0.1(react@19.0.0)
+    optionalDependencies:
+      typescript: 5.7.3
 
   next-themes@0.4.4(react-dom@19.0.0(react@19.0.0))(react@19.0.0):
     dependencies:
@@ -12717,6 +12903,13 @@ snapshots:
       tslib: 2.8.1
     optionalDependencies:
       '@types/react': 18.3.0
+
+  use-intl@4.0.1(react@19.0.0):
+    dependencies:
+      '@formatjs/fast-memoize': 2.2.6
+      '@schummar/icu-type-parser': 1.21.5
+      intl-messageformat: 10.7.15
+      react: 19.0.0
 
   use-sidecar@1.1.3(@types/react@18.3.0)(react@19.0.0):
     dependencies:

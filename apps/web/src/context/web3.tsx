@@ -5,7 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { PropsWithChildren } from "react"
 import { cookieToInitialState, WagmiProvider, type Config } from "wagmi"
 import { WALLETCONNECT_ADAPTER, WALLETCONNECT_PROJECT_ID } from "@/lib/web3"
-import { SITE_NAME, SITE_INFO, SITE_URL } from "@/constants/site"
+import { SITE_NAME, SITE_INFO, SITE_URL } from "@/config/site"
 import { ETH_CHAINS } from "@/lib/network"
 import { mainnet } from "@reown/appkit/networks"
 

@@ -4,6 +4,7 @@ import { MenuMobile, MenuDesktop } from "./menu"
 import { Connect } from "./connect"
 import Image from "next/image"
 import Logo from "@/assets/icons/logo.png"
+import LanguageSwitcher from "./locale-switcher"
 
 export default function Header() {
   return (
@@ -15,6 +16,7 @@ export default function Header() {
             <Image src={Logo} alt="logo" width={30} height={30} />
             <h1 className="btn btn-ghost text-xl font-bold ml-2">{"Aswap"}</h1>
           </LinkComponent>
+          <LanguageSwitcher />
           <MenuDesktop className="max-sm:hidden" />
         </div>
         <Connect />

@@ -1,0 +1,10 @@
+{
+    "HomePage": {
+        "title": "你好，世界！",
+        "about": "去关于页面"
+    },
+    "LocaleSwitcher": {
+        "label": "切换语言",
+        "locale": "{locale, select, zh {🇨🇳 中文} en {🇺🇸 English} other {Unknown}}"
+    }
+}

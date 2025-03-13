@@ -7,7 +7,7 @@ import { Pool } from "@/types/pool"
 import { parseSqrtPriceX96ToPrice, tickToPrice } from "@/lib/utils"
 import { Token } from "@/types/swap"
 import BigNumber from "bignumber.js"
-import { CreatePositionsDialog } from "@/app/positions/_components/create-positions-form-dialog"
+import { CreatePositionsDialog } from "@/app/[locale]/positions/_components/create-positions-form-dialog"
 
 // 改进格式化价格的辅助函数
 const formatPrice = (priceStr: string): string => {
