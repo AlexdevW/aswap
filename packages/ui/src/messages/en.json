@@ -1,0 +1,9 @@
+{
+    "DataTable": {
+        "rowsPerPage": "Rows per page",
+        "selectedCount": "Selected {selected} of {total}",
+        "noResults": "No results found",
+        "page": "Page {page} of {total}",
+        "viewOptions": "View"
+    }
+}

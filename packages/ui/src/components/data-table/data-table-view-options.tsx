@@ -19,6 +19,7 @@ import {
   PopoverTrigger,
 } from "@workspace/ui/components/popover"
 import { cn, toSentenceCase } from "@workspace/ui/lib/utils"
+import { useTranslations } from "use-intl"
 
 interface DataTableViewOptionsProps<TData> {
   table: Table<TData>
@@ -27,6 +28,7 @@ interface DataTableViewOptionsProps<TData> {
 export function DataTableViewOptions<TData>({
   table,
 }: DataTableViewOptionsProps<TData>) {
+  const t = useTranslations("DataTable")
   const triggerRef = React.useRef<HTMLButtonElement>(null)
 
   return (
@@ -41,7 +43,7 @@ export function DataTableViewOptions<TData>({
           className="ml-auto hidden h-8 gap-2 focus:outline-none focus:ring-1 focus:ring-ring focus-visible:ring-0 lg:flex"
         >
           <Settings2 className="size-4" />
-          View
+          {t("viewOptions")}
           <ChevronsUpDown className="ml-auto size-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>

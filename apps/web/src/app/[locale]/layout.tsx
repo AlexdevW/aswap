@@ -14,6 +14,8 @@ import { routing } from "@/i18n/routing"
 import { hasLocale, Locale, NextIntlClientProvider } from "next-intl"
 import { notFound } from "next/navigation"
 import { setRequestLocale } from "next-intl/server"
+import { UIConfigProvider } from "@workspace/ui/providers/i18n-provider"
+import zh from "@workspace/ui/messages/zh.json"
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -65,7 +67,12 @@ export default async function RootLayout({
             disableTransitionOnChange
           >
             <Web3Provider cookies={cookies}>
-              <Layout>{children}</Layout>
+              <UIConfigProvider
+                locale={locale}
+                messages={locale === "zh" ? zh : undefined}
+              >
+                <Layout>{children}</Layout>
+              </UIConfigProvider>
             </Web3Provider>
             <TailwindIndicator />
           </ThemeProvider>

@@ -120,5 +120,12 @@
         "remove": "Remove",
         "collect": "Collect",
         "error": "Error: {error}"
+    },
+    "Menu": {
+        "title": "Menu",
+        "home": "Home",
+        "swap": "Swap",
+        "pool": "Pool",
+        "settings": "Settings"
     }
 }

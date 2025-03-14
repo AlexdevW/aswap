@@ -11,25 +11,27 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@workspace/ui/components/drawer"
+import { useTranslations } from "next-intl"
 
 const menuItems = [
   {
-    label: "Home",
+    labelKey: "home",
     href: "/",
   },
   {
-    label: "Swap",
+    labelKey: "swap",
     href: "/swap",
   },
   {
-    label: "Pool",
+    labelKey: "pool",
     href: "/pool",
   },
-]
+] as const
 
 export function MenuMobile({ className }: { className?: string }) {
   const pathname = usePathname()
   const [open, setOpen] = useState(false)
+  const t = useTranslations("Menu")
 
   return (
     <div className={cn("flex items-center", className)}>
@@ -43,7 +45,9 @@ export function MenuMobile({ className }: { className?: string }) {
           </Button>
         </DrawerTrigger>
         <DrawerContent className="px-5 min-h-96 bg-white rounded-t-3xl">
-          <DrawerTitle className="text-md font-bold my-2">菜单</DrawerTitle>
+          <DrawerTitle className="text-md font-bold my-2">
+            {t("title")}
+          </DrawerTitle>
           {menuItems.map((item) => (
             <LinkComponent
               href={item.href}
@@ -56,10 +60,10 @@ export function MenuMobile({ className }: { className?: string }) {
                   : "text-muted-foreground"
               )}
             >
-              {item.label}
+              {t(item.labelKey)}
             </LinkComponent>
           ))}
-          <div className="text-md font-bold my-2">设置</div>
+          <div className="text-md font-bold my-2">{t("settings")}</div>
         </DrawerContent>
       </Drawer>
     </div>
@@ -68,6 +72,7 @@ export function MenuMobile({ className }: { className?: string }) {
 
 export function MenuDesktop({ className }: { className?: string }) {
   const pathname = usePathname()
+  const t = useTranslations("Menu")
 
   return (
     <div className={cn("flex items-center gap-8", className)}>
@@ -81,7 +86,7 @@ export function MenuDesktop({ className }: { className?: string }) {
                 : "text-muted-foreground"
             )}
           >
-            {item.label}
+            {t(item.labelKey)}
           </div>
         </LinkComponent>
       ))}

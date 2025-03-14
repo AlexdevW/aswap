@@ -101,6 +101,7 @@
         "validEthereumAddress": "必须是有效的以太坊地址",
         "indexMin": "索引不能小于0",
         "insufficientBalance": "余额不足",
+        "specifyLiquidity": "请指定你贡献的代币数量",
         "max": "最高"
     },
     "PositionsTableColumns": {
@@ -120,5 +121,12 @@
         "remove": "移除",
         "collect": "收集",
         "error": "错误: {error}"
+    },
+    "Menu": {
+        "title": "菜单",
+        "home": "首页",
+        "swap": "兑换",
+        "pool": "资金池",
+        "settings": "设置"
     }
 }
