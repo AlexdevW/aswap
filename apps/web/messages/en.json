@@ -127,5 +127,16 @@
         "swap": "Swap",
         "pool": "Pool",
         "settings": "Settings"
+    },
+    "Connect": {
+        "connectWallet": "Connect Wallet"
+    },
+    "TransactionError": {
+        "userRejected": "User rejected the transaction",
+        "insufficientFunds": "Insufficient funds, please check your balance",
+        "timeout": "Transaction timed out, please try again later",
+        "networkError": "Network connection error, please check your internet connection",
+        "defaultError": "Operation failed: {errorMessage}",
+        "unknownError": "An unknown error occurred"
     }
 }

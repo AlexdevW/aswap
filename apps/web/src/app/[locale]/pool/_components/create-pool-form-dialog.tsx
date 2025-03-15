@@ -38,6 +38,7 @@ export function CreatePoolDialog({
   ...props
 }: CreatePoolDialogProps) {
   const t = useTranslations("CreatePoolDialog")
+  const tTransError = useTranslations("TransactionError")
   const [uncontrolledOpen, setUncontrolledOpen] = React.useState(false)
   const [txStatus, setTxStatus] = React.useState<TransactionStatus>(
     TransactionStatus.IDLE
@@ -84,12 +85,12 @@ export function CreatePoolDialog({
         toast.success(t("successMessage"))
         onSuccess?.()
       } catch (error: unknown) {
-        toast.error(handleTransactionError(error))
+        toast.error(handleTransactionError(error, tTransError))
       } finally {
         setTxStatus(TransactionStatus.IDLE)
       }
     },
-    [writeContractAsync, handleOpenChange, onSuccess, t]
+    [writeContractAsync, handleOpenChange, onSuccess, t, tTransError]
   )
 
   const isCreatePending = txStatus !== TransactionStatus.IDLE

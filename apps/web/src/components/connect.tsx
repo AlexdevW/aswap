@@ -1,11 +1,13 @@
 "use client"
-import { useAppKit, useAppKitAccount } from "@reown/appkit/react"
 import { Button } from "@workspace/ui/components/button"
-import React from "react"
+import { Avatar, useModal } from "connectkit"
+import { useTranslations } from "next-intl"
+import { useAccount } from "wagmi"
 
 export function Connect() {
-  const { address, isConnected } = useAppKitAccount()
-  const { open } = useAppKit()
+  const { setOpen } = useModal()
+  const { isConnected, address } = useAccount()
+  const t = useTranslations("Connect")
 
   return (
     <div>
@@ -14,20 +16,20 @@ export function Connect() {
           <Button
             className="rounded-full transition-all active:scale-95 px-2"
             variant="secondary"
-            onClick={() => open()}
+            onClick={() => setOpen(true)}
           >
-            <wui-avatar className="shadow-sm" size="sm" address={address} />
+            <Avatar size={20} address={address} />
             <span className="max-sm:hidden">
-              {address?.slice(0, 4)}...{address?.slice(-6)}
+              {address?.slice(0, 6)}...{address?.slice(-4)}
             </span>
           </Button>
         </div>
       ) : (
         <Button
           className="rounded-full transition-all active:scale-95"
-          onClick={() => open()}
+          onClick={() => setOpen(true)}
         >
-          Connect
+          {t("connectWallet")}
         </Button>
       )}
     </div>

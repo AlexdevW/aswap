@@ -1,4 +1,3 @@
-import React from "react"
 import LinkComponent from "./link-component"
 import { MenuMobile, MenuDesktop } from "./menu"
 import { Connect } from "./connect"
@@ -16,10 +15,12 @@ export default function Header() {
             <Image src={Logo} alt="logo" width={30} height={30} />
             <h1 className="btn btn-ghost text-xl font-bold ml-2">{"Aswap"}</h1>
           </LinkComponent>
-          <LanguageSwitcher />
           <MenuDesktop className="max-sm:hidden" />
         </div>
-        <Connect />
+        <div className="flex items-center gap-4">
+          <LanguageSwitcher />
+          <Connect />
+        </div>
       </div>
     </header>
   )

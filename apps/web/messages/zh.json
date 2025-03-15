@@ -128,5 +128,16 @@
         "swap": "兑换",
         "pool": "资金池",
         "settings": "设置"
+    },
+    "Connect": {
+        "connectWallet": "绑定钱包"
+    },
+    "TransactionError": {
+        "userRejected": "用户拒绝了交易",
+        "insufficientFunds": "余额不足，请检查您的资金",
+        "timeout": "交易超时，请稍后重试",
+        "networkError": "网络连接错误，请检查您的网络状态",
+        "defaultError": "操作失败: {errorMessage}",
+        "unknownError": "发生未知错误"
     }
 }

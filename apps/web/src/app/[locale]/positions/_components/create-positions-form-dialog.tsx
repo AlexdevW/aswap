@@ -53,6 +53,7 @@ export function CreatePositionsDialog({
   const formRef = React.useRef<{ submit: () => Promise<void> }>(null)
 
   const t = useTranslations("CreatePositionsDialog")
+  const tTransError = useTranslations("TransactionError")
 
   // 判断是否为受控模式
   const open = controlledOpen !== undefined ? controlledOpen : uncontrolledOpen
@@ -174,7 +175,7 @@ export function CreatePositionsDialog({
       toast.success(t("positionCreated"))
       onSuccess?.()
     } catch (error: unknown) {
-      toast.error(handleTransactionError(error))
+      toast.error(handleTransactionError(error, tTransError))
     } finally {
       setTxStatus(TransactionStatus.IDLE)
     }
