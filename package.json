@@ -22,7 +22,7 @@
   },
   "pnpm": {
     "patchedDependencies": {
-      "connectkit": "patches/connectkit.patch"
+      "connectkit@1.8.2": "patches/connectkit@1.8.2.patch"
     }
   }
 }
