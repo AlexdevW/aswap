@@ -12,6 +12,7 @@ import {
   DrawerTrigger,
 } from "@workspace/ui/components/drawer"
 import { useTranslations } from "next-intl"
+import LocaleSwitcher from "./locale-switcher"
 
 const menuItems = [
   {
@@ -63,7 +64,8 @@ export function MenuMobile({ className }: { className?: string }) {
               {t(item.labelKey)}
             </LinkComponent>
           ))}
-          <div className="text-md font-bold my-2">{t("settings")}</div>
+          <div className="text-md font-bold my-2 mb-4">{t("settings")}</div>
+          <LocaleSwitcher />
         </DrawerContent>
       </Drawer>
     </div>

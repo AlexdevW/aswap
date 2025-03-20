@@ -18,7 +18,9 @@ export default function Header() {
           <MenuDesktop className="max-sm:hidden" />
         </div>
         <div className="flex items-center gap-4">
-          <LocaleSwitcher />
+          <div className="hidden sm:block">
+            <LocaleSwitcher />
+          </div>
           <Connect />
         </div>
       </div>
