@@ -1,7 +1,20 @@
 {
     "HomePage": {
-        "title": "你好，世界！",
-        "about": "去关于页面"
+        "title": "Aswap 去中心化交易平台",
+        "description": "欢迎使用我们的去中心化交易平台。轻松交易代币和提供流动性，享受安全、快速的区块链交易体验。",
+        "swapButton": "交换代币",
+        "poolButton": "管理流动性",
+        "featuresTitle": "主要特点",
+        "feature1Title": "快速交易",
+        "feature1": "快速安全的代币交换，低滑点，高效率",
+        "feature2Title": "赚取收益",
+        "feature2": "通过提供流动性赚取手续费，最大化您的资产收益",
+        "feature3Title": "多钱包支持",
+        "feature3": "支持多种钱包连接，方便您随时随地进行交易",
+        "ctaTitle": "立即开始交易",
+        "ctaDescription": "只需几步，即可体验去中心化金融的未来",
+        "ctaButton": "开始交易",
+        "about": "关于我们"
     },
     "LocaleSwitcher": {
         "label": "切换语言",

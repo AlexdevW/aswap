@@ -1,7 +1,20 @@
 {
     "HomePage": {
-        "title": "Hello world!",
-        "about": "Go to the about page"
+        "title": "Aswap Decentralized Exchange",
+        "description": "Welcome to our decentralized exchange platform. Trade tokens and provide liquidity with ease, enjoying a secure and fast blockchain trading experience.",
+        "swapButton": "Swap Tokens",
+        "poolButton": "Manage Liquidity",
+        "featuresTitle": "Key Features",
+        "feature1Title": "Fast Trading",
+        "feature1": "Fast and secure token swaps with low slippage and high efficiency",
+        "feature2Title": "Earn Rewards",
+        "feature2": "Earn fees by providing liquidity and maximize your asset returns",
+        "feature3Title": "Multi-wallet Support",
+        "feature3": "Connect with multiple wallets for convenient trading anytime, anywhere",
+        "ctaTitle": "Start Trading Now",
+        "ctaDescription": "Experience the future of decentralized finance in just a few steps",
+        "ctaButton": "Start Trading",
+        "about": "About Us"
     },
     "LocaleSwitcher": {
         "label": "Change language",
