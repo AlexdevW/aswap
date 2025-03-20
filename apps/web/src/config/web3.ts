@@ -1,6 +1,6 @@
 import { getDefaultConfig } from "connectkit"
 import { http, createConfig, createStorage, cookieStorage } from "wagmi"
-import { base, hardhat, mainnet, sepolia } from "wagmi/chains"
+import { hardhat, mainnet, sepolia } from "wagmi/chains"
 import { SITE_NAME, SITE_INFO, SITE_URL } from "@/config/site"
 
 export const WALLETCONNECT_PROJECT_ID =
@@ -20,8 +20,8 @@ export function getConfig() {
       walletConnectProjectId: WALLETCONNECT_PROJECT_ID,
       transports: {
         [mainnet.id]: http(),
-        [base.id]: http(),
         [hardhat.id]: http(),
+        [sepolia.id]: http(),
       },
       // Required App Info
       appName: SITE_NAME,
