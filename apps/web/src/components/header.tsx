@@ -3,7 +3,7 @@ import { MenuMobile, MenuDesktop } from "./menu"
 import { Connect } from "./connect"
 import Image from "next/image"
 import Logo from "@/assets/icons/logo.png"
-import LanguageSwitcher from "./locale-switcher"
+import LocaleSwitcher from "./locale-switcher"
 
 export default function Header() {
   return (
@@ -18,7 +18,7 @@ export default function Header() {
           <MenuDesktop className="max-sm:hidden" />
         </div>
         <div className="flex items-center gap-4">
-          <LanguageSwitcher />
+          <LocaleSwitcher />
           <Connect />
         </div>
       </div>

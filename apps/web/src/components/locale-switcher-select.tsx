@@ -1,29 +1,32 @@
 "use client"
 
 import { useSearchParams } from "next/navigation"
-import { Locale } from "next-intl"
-import { ChangeEvent, ReactNode, useTransition } from "react"
+import { Locale, useTranslations } from "next-intl"
+import { useTransition } from "react"
 import { usePathname, useRouter } from "@/i18n/navigation"
-import { cn } from "@workspace/ui/lib/utils"
+import { routing } from "@/i18n/routing"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+} from "@workspace/ui/components/select"
 
 type Props = {
-  children: ReactNode
   defaultValue: string
   label: string
 }
 
-export default function LocaleSwitcherSelect({
-  children,
-  defaultValue,
-  label,
-}: Props) {
+export default function LocaleSwitcherSelect({ defaultValue }: Props) {
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
   const pathname = usePathname()
   const searchParams = useSearchParams()
+  const t = useTranslations("LocaleSwitcher")
 
-  function onSelectChange(event: ChangeEvent<HTMLSelectElement>) {
-    const nextLocale = event.target.value as Locale
+  async function onSelectChange(nextLocale: Locale) {
+    // 兼容 next-intl 的 syncLocaleCookie 调用顺序错误, 导致多语言更新失败问题
+    await Promise.resolve()
     startTransition(() => {
       router.replace(
         { pathname, query: Object.fromEntries(searchParams.entries()) },
@@ -33,22 +36,22 @@ export default function LocaleSwitcherSelect({
   }
 
   return (
-    <label
-      className={cn(
-        "relative text-gray-400",
-        isPending && "transition-opacity [&:disabled]:opacity-30"
-      )}
-    >
-      <p className="sr-only">{label}</p>
-      <select
-        className="inline-flex appearance-none bg-transparent py-3 pl-2 pr-6"
-        defaultValue={defaultValue}
+    <div>
+      <Select
         disabled={isPending}
-        onChange={onSelectChange}
+        defaultValue={defaultValue}
+        onValueChange={onSelectChange}
       >
-        {children}
-      </select>
-      <span className="pointer-events-none absolute right-2 top-[8px]">⌄</span>
-    </label>
+        {/* 不实用 SelectValue 避免首批展示未渲染问题 */}
+        <SelectTrigger>{t("locale", { locale: defaultValue })}</SelectTrigger>
+        <SelectContent>
+          {routing.locales.map((cur) => (
+            <SelectItem key={cur} value={cur}>
+              {t("locale", { locale: cur })}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+    </div>
   )
 }
