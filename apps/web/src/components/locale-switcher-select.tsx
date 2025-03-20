@@ -14,7 +14,6 @@ import {
 
 type Props = {
   defaultValue: string
-  label: string
 }
 
 export default function LocaleSwitcherSelect({ defaultValue }: Props) {
@@ -43,7 +42,9 @@ export default function LocaleSwitcherSelect({ defaultValue }: Props) {
         onValueChange={onSelectChange}
       >
         {/* 不实用 SelectValue 避免首批展示未渲染问题 */}
-        <SelectTrigger>{t("locale", { locale: defaultValue })}</SelectTrigger>
+        <SelectTrigger className="btn btn-ghost rounded-full">
+          {t("locale", { locale: defaultValue })}
+        </SelectTrigger>
         <SelectContent>
           {routing.locales.map((cur) => (
             <SelectItem key={cur} value={cur}>
