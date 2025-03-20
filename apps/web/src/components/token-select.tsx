@@ -11,6 +11,7 @@ import { Input } from "@workspace/ui/components/input"
 import { cn } from "@workspace/ui/lib/utils"
 import { Search } from "lucide-react"
 import React, { useState } from "react"
+import { useTranslations } from "next-intl"
 
 function Balance({ token }: { token?: Token }) {
   const { balance } = useTokenBalance(token)
@@ -42,6 +43,7 @@ export default function TokenSelect({
 }) {
   const [open, setOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState("")
+  const t = useTranslations("TokenSelect")
 
   const filteredOptions = React.useMemo(() => {
     const query = searchQuery.trim().toLowerCase()
@@ -68,14 +70,14 @@ export default function TokenSelect({
       </DialogTrigger>
       <DialogContent className="px-0 max-w-[400px] w-[calc(100vw-30px)] !rounded-3xl bg-white">
         <DialogHeader className="px-6">
-          <DialogTitle>选择代币</DialogTitle>
+          <DialogTitle>{t("title")}</DialogTitle>
         </DialogHeader>
         <div className="px-4 relative">
           <Search size={20} className="absolute top-2.5 left-7" />
           <Input
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="搜索代币"
+            placeholder={t("search")}
             className="flex-1 text-lg bg-secondary rounded-full py-5 pl-9 !border-none shadow-none ring-0  focus-visible:ring-0"
           />
         </div>
@@ -110,11 +112,7 @@ export default function TokenSelect({
             )
           })}
         </ul>
-        {options.length <= 0 && (
-          <div className="px-5">
-            当前没有可选的代币， 请在交易界面领取测试代币
-          </div>
-        )}
+        {options.length <= 0 && <div className="px-5">{t("noTokens")}</div>}
       </DialogContent>
     </Dialog>
   )

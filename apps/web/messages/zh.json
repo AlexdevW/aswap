@@ -139,5 +139,10 @@
         "networkError": "网络连接错误，请检查您的网络状态",
         "defaultError": "操作失败: {errorMessage}",
         "unknownError": "发生未知错误"
+    },
+    "TokenSelect": {
+        "title": "选择代币",
+        "search": "搜索代币",
+        "noTokens": "当前没有可选的代币，请在交易界面领取测试代币"
     }
 }

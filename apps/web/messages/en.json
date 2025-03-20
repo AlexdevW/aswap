@@ -138,5 +138,10 @@
         "networkError": "Network connection error, please check your internet connection",
         "defaultError": "Operation failed: {errorMessage}",
         "unknownError": "An unknown error occurred"
+    },
+    "TokenSelect": {
+        "title": "Select Token",
+        "search": "Search tokens",
+        "noTokens": "No tokens available. Please claim test tokens in the trading interface"
     }
 }
