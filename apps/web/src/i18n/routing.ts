@@ -5,6 +5,4 @@ export const routing = defineRouting({
   locales: ["en", "zh"],
   // Used when no locale matches
   defaultLocale: "en",
-  // 默认语言不重定向
-  localePrefix: "as-needed",
 })

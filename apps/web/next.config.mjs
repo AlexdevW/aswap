@@ -3,13 +3,14 @@ import createNextIntlPlugin from "next-intl/plugin"
 
 const nextConfig = {
   transpilePackages: ["@workspace/ui"],
-  // experimental: {
-  //   createMessagesDeclaration: "./messages/en.json",
-  // },
   webpack: (config) => {
     config.externals.push("pino-pretty")
     return config
   },
 }
-const withNextIntl = createNextIntlPlugin()
+const withNextIntl = createNextIntlPlugin({
+  experimental: {
+    createMessagesDeclaration: "./messages/en.json",
+  },
+})
 export default withNextIntl(nextConfig)

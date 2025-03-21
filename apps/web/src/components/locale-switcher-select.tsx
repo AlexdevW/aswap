@@ -23,9 +23,7 @@ export default function LocaleSwitcherSelect({ defaultValue }: Props) {
   const searchParams = useSearchParams()
   const t = useTranslations("LocaleSwitcher")
 
-  async function onSelectChange(nextLocale: Locale) {
-    // 兼容 next-intl 的 syncLocaleCookie 调用顺序错误, 导致多语言更新失败问题
-    await Promise.resolve()
+  function onSelectChange(nextLocale: Locale) {
     startTransition(() => {
       router.replace(
         { pathname, query: Object.fromEntries(searchParams.entries()) },
@@ -41,8 +39,8 @@ export default function LocaleSwitcherSelect({ defaultValue }: Props) {
         defaultValue={defaultValue}
         onValueChange={onSelectChange}
       >
-        {/* 不实用 SelectValue 避免首批展示未渲染问题 */}
         <SelectTrigger className="btn btn-ghost rounded-full">
+          {/* 不使用 SelectValue 避免首批展示未渲染问题 */}
           {t("locale", { locale: defaultValue })}
         </SelectTrigger>
         <SelectContent>
