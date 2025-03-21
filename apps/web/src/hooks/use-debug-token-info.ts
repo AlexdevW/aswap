@@ -1,15 +1,17 @@
+import { defaultChainId } from "@/config/web3"
 import { erc20Abi } from "@/lib/contracts"
 import { getContractAddress } from "@/lib/utils"
 import { Token } from "@/types/swap"
 import { useQuery } from "@tanstack/react-query"
 import { multicall } from "viem/actions"
-import { usePublicClient } from "wagmi"
+import { useAccount, usePublicClient } from "wagmi"
 
 export default function useDebugTokensInfo() {
-  const publicClient = usePublicClient()
+  const { chainId } = useAccount()
+  const publicClient = usePublicClient({ chainId: chainId ?? defaultChainId })
 
   return useQuery({
-    queryKey: ["tokens-info"],
+    queryKey: ["tokens-info", chainId],
     queryFn: async () => {
       if (!publicClient) throw new Error("Public client not found")
 

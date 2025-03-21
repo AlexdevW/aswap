@@ -62,6 +62,9 @@ export function ResponsiveDialog({
         ) : null}
         <DialogContent
           className={cn("bg-white !rounded-3xl", contentClassName)}
+          onEscapeKeyDown={(e) => e.preventDefault()}
+          onPointerDown={(e) => e.preventDefault()}
+          onInteractOutside={(e) => e.preventDefault()}
         >
           <DialogHeader>
             <DialogTitle>{title}</DialogTitle>
@@ -81,7 +84,12 @@ export function ResponsiveDialog({
       {showTrigger && trigger ? (
         <DrawerTrigger asChild>{trigger}</DrawerTrigger>
       ) : null}
-      <DrawerContent className={cn("bg-white !rounded-3xl", contentClassName)}>
+      <DrawerContent
+        className={cn("bg-white !rounded-3xl", contentClassName)}
+        onEscapeKeyDown={(e) => e.preventDefault()}
+        onPointerDown={(e) => e.preventDefault()}
+        onInteractOutside={(e) => e.preventDefault()}
+      >
         <DrawerHeader>
           <DrawerTitle>{title}</DrawerTitle>
           {description}

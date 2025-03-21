@@ -1,27 +1,33 @@
 import { getDefaultConfig } from "connectkit"
 import { http, createConfig, createStorage, cookieStorage } from "wagmi"
-import { hardhat, mainnet, sepolia } from "wagmi/chains"
+import { hardhat, sepolia } from "wagmi/chains"
 import { SITE_NAME, SITE_INFO, SITE_URL } from "@/config/site"
+import { IS_PROD } from "@/constants"
 
 export const WALLETCONNECT_PROJECT_ID =
   process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID ?? ""
+export const INFURA_KEY = process.env.NEXT_PUBLIC_INFURA_KEY ?? ""
+
 if (!WALLETCONNECT_PROJECT_ID) {
   console.warn(
     "You need to provide a NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID env variable"
   )
 }
 
+export const defaultChainId = IS_PROD ? sepolia.id : hardhat.id
+
 export function getConfig() {
   return createConfig(
     getDefaultConfig({
       // Your dApps chains
-      chains: [mainnet, hardhat, sepolia],
+      chains: [hardhat, sepolia],
       // Required API Keys
       walletConnectProjectId: WALLETCONNECT_PROJECT_ID,
       transports: {
-        [mainnet.id]: http(),
         [hardhat.id]: http(),
-        [sepolia.id]: http(),
+        [sepolia.id]: INFURA_KEY
+          ? http("https://sepolia.infura.io/v3/" + INFURA_KEY)
+          : http(),
       },
       // Required App Info
       appName: SITE_NAME,

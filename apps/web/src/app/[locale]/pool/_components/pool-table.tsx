@@ -10,11 +10,15 @@ import { getContractAddress } from "@/lib/utils"
 import { DataTableToolbar } from "@workspace/ui/components/data-table/data-table-toolbar"
 import { PoolTableToolbarActions } from "./pool-table-toolbar-actions"
 import useDebugTokensInfo from "@/hooks/use-debug-token-info"
+import { defaultChainId } from "@/config/web3"
+import { useAccount } from "wagmi"
 
 export default function PoolTable() {
   const { data: tokensInfo } = useDebugTokensInfo()
+  const { chainId } = useAccount()
   const { data = [], refetch } = useReadPoolManagerGetAllPools({
     address: getContractAddress("PoolManager"),
+    chainId: chainId ?? defaultChainId,
   })
   const columns = useColumns(tokensInfo, refetch)
 

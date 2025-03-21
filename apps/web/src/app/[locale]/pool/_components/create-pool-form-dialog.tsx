@@ -2,6 +2,7 @@
 import { Loader, PlusIcon } from "lucide-react"
 import * as React from "react"
 import { useTranslations } from "next-intl"
+import { useAccount } from "wagmi"
 
 import { Button } from "@workspace/ui/components/button"
 import { toast } from "@workspace/ui/components/sonner"
@@ -18,6 +19,7 @@ import {
 import { useWritePoolManagerCreateAndInitializePoolIfNecessary } from "@/lib/contracts"
 import { Dialog } from "@workspace/ui/components/dialog"
 import { handleTransactionError } from "@/lib/error-handlers"
+import { useModal } from "connectkit"
 
 interface CreatePoolDialogProps
   extends React.ComponentPropsWithoutRef<typeof Dialog> {
@@ -39,11 +41,14 @@ export function CreatePoolDialog({
 }: CreatePoolDialogProps) {
   const t = useTranslations("CreatePoolDialog")
   const tTransError = useTranslations("TransactionError")
+  const tConnect = useTranslations("Connect")
   const [uncontrolledOpen, setUncontrolledOpen] = React.useState(false)
   const [txStatus, setTxStatus] = React.useState<TransactionStatus>(
     TransactionStatus.IDLE
   )
   const open = controlledOpen !== undefined ? controlledOpen : uncontrolledOpen
+  const { isConnected } = useAccount()
+  const { setOpen: setConnectModalOpen } = useModal()
 
   const handleOpenChange = React.useCallback(
     (nextOpen: boolean) => {
@@ -100,6 +105,11 @@ export function CreatePoolDialog({
     [TransactionStatus.CREATING_POOL]: t("creatingPool"),
   }
 
+  // 处理钱包连接
+  const handleConnectWallet = () => {
+    setConnectModalOpen(true)
+  }
+
   return (
     <ResponsiveDialog
       open={open}
@@ -119,16 +129,25 @@ export function CreatePoolDialog({
               {t("cancel")}
             </Button>
           </DialogCloseButton>
-          <Button
-            aria-label={t("addNewPool")}
-            onClick={() => formRef.current?.submit()}
-            disabled={isCreatePending}
-          >
-            {isCreatePending && (
-              <Loader className="mr-2 size-4 animate-spin" aria-hidden="true" />
-            )}
-            {buttonTextMap[txStatus]}
-          </Button>
+          {isConnected ? (
+            <Button
+              aria-label={t("addNewPool")}
+              onClick={() => formRef.current?.submit()}
+              disabled={isCreatePending}
+            >
+              {isCreatePending && (
+                <Loader
+                  className="mr-2 size-4 animate-spin"
+                  aria-hidden="true"
+                />
+              )}
+              {buttonTextMap[txStatus]}
+            </Button>
+          ) : (
+            <Button onClick={handleConnectWallet}>
+              {tConnect("connectWallet")}
+            </Button>
+          )}
         </>
       }
       {...props}
