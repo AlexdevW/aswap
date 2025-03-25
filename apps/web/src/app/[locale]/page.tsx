@@ -1,9 +1,9 @@
 import { Locale, useTranslations } from "next-intl"
 import { setRequestLocale } from "next-intl/server"
 import { use } from "react"
-import Link from "next/link"
 import Image from "next/image"
 import logo from "@/assets/icons/logo.png"
+import LinkComponent from "@/components/link-component"
 
 export default function Home({
   params,
@@ -38,19 +38,19 @@ export default function Home({
           </p>
 
           <div className="flex flex-col sm:flex-row gap-6 w-full max-w-lg">
-            <Link
+            <LinkComponent
               href="/swap"
               className="flex-1 bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800 text-white font-semibold py-4 px-8 rounded-xl text-center transition-all transform hover:scale-105 shadow-lg"
             >
               {t("swapButton")}
-            </Link>
+            </LinkComponent>
 
-            <Link
+            <LinkComponent
               href="/pool"
               className="flex-1 bg-gradient-to-r from-purple-500 to-purple-700 hover:from-purple-600 hover:to-purple-800 text-white font-semibold py-4 px-8 rounded-xl text-center transition-all transform hover:scale-105 shadow-lg"
             >
               {t("poolButton")}
-            </Link>
+            </LinkComponent>
           </div>
         </div>
       </div>
@@ -149,12 +149,12 @@ export default function Home({
         <p className="text-xl mb-8 max-w-2xl mx-auto text-gray-700 dark:text-gray-300">
           {t("ctaDescription")}
         </p>
-        <Link
+        <LinkComponent
           href="/swap"
           className="inline-block bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-semibold py-4 px-10 rounded-xl text-center transition-all transform hover:scale-105 shadow-lg"
         >
           {t("ctaButton")}
-        </Link>
+        </LinkComponent>
       </div>
     </div>
   )

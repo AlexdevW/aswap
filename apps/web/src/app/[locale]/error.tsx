@@ -16,7 +16,7 @@ export default function Error({ error, reset }: Props) {
   }, [error])
 
   return (
-    <div>
+    <div className="rounded-3xl w-full flex justify-center items-center mt-20">
       {t.rich("description", {
         p: (chunks) => <p className="mt-4">{chunks}</p>,
         retry: (chunks) => (

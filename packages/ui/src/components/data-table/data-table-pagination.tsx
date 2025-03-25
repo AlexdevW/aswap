@@ -38,7 +38,7 @@ export function DataTablePagination<TData>({
       </div>
       <div className="flex flex-col-reverse items-center gap-4 sm:flex-row sm:gap-6 lg:gap-8">
         <div className="flex items-center space-x-2">
-          <p className="whitespace-nowrap font-medium text-sm">
+          <p className="whitespace-nowrap font-medium text-sm text-muted-foreground">
             {t("rowsPerPage")}
           </p>
           <Select
@@ -47,7 +47,7 @@ export function DataTablePagination<TData>({
               table.setPageSize(Number(value))
             }}
           >
-            <SelectTrigger className="h-8 w-[4.5rem]">
+            <SelectTrigger className="h-8 w-[4.5rem] text-muted-foreground">
               <SelectValue placeholder={table.getState().pagination.pageSize} />
             </SelectTrigger>
             <SelectContent side="top">
@@ -59,7 +59,7 @@ export function DataTablePagination<TData>({
             </SelectContent>
           </Select>
         </div>
-        <div className="flex items-center justify-center font-medium text-sm">
+        <div className="flex items-center justify-center font-medium text-sm text-muted-foreground">
           {t("page", {
             page: table.getState().pagination.pageIndex + 1,
             total: table.getPageCount(),

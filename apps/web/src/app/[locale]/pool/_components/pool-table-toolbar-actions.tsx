@@ -4,9 +4,9 @@ import type { Table } from "@tanstack/react-table"
 import { CreatePoolDialog } from "./create-pool-form-dialog"
 import { Pool } from "@/types/pool"
 import { QueryObserverBaseResult } from "@tanstack/react-query"
-import Link from "next/link"
 import { Button } from "@workspace/ui/components/button"
 import { useTranslations } from "next-intl"
+import LinkComponent from "@/components/link-component"
 
 interface PoolTableToolbarActionsProps {
   table: Table<Pool>
@@ -20,9 +20,9 @@ export function PoolTableToolbarActions({
 
   return (
     <div className="flex items-center gap-2">
-      <Link href="/positions">
+      <LinkComponent href="/positions">
         <Button size="sm">{t("positions")}</Button>
-      </Link>
+      </LinkComponent>
       <CreatePoolDialog onSuccess={() => refetch()} />
     </div>
   )
