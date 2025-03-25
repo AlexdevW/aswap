@@ -1,5 +1,9 @@
 import { useCallback, useContext } from "react"
-import { ConfigContext, Locale } from "@workspace/ui/providers/i18n-provider"
+import {
+  ConfigContext,
+  defaultLocale,
+  Locale,
+} from "@workspace/ui/components/i18n-provider"
 
 type NestedKeyOf<ObjectType> = ObjectType extends object
   ? {
@@ -35,7 +39,7 @@ type NamespaceKeys<
 function useTranslation<NestedKey extends NamespaceKeys<Locale> = never>(
   namespace?: NestedKey
 ) {
-  const { locale } = useContext(ConfigContext)
+  const { locale = defaultLocale } = useContext(ConfigContext)
 
   const translation = useCallback(
     (

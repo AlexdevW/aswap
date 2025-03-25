@@ -1,7 +1,7 @@
 import { type ReactNode } from "react"
 import { ThemeProvider } from "./theme-provider"
 import { Locale, NextIntlClientProvider } from "next-intl"
-import { UIConfigProvider } from "@workspace/ui/providers/i18n-provider"
+import { UIConfigProvider } from "@workspace/ui/components/i18n-provider"
 import zhMessage from "@workspace/ui/locales/zh.json"
 import enMessage from "@workspace/ui/locales/en.json"
 import Web3Provider from "./web3-provider"
