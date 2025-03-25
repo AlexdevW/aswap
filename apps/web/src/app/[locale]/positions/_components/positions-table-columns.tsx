@@ -53,21 +53,8 @@ export function useColumns({
         header: t("owner"),
         enableSorting: false,
         cell: ({ row }) => <div>{shortenAddress(row.original.owner)}</div>,
+        enableHiding: false,
       },
-      // {
-      //   accessorKey: "token0",
-      //   header: () => <div className="whitespace-nowrap">Token 0</div>,
-      //   enableSorting: false,
-      //   enableHiding: false,
-      //   cell: ({ row }) => <div>{shortenAddress(row.original.token0)}</div>,
-      // },
-      // {
-      //   accessorKey: "token1",
-      //   header: () => <div className="whitespace-nowrap">Token 1</div>,
-      //   enableSorting: false,
-      //   enableHiding: false,
-      //   cell: ({ row }) => <div>{shortenAddress(row.original.token1)}</div>,
-      // },
       {
         accessorKey: "pool",
         header: ({ column }) => (

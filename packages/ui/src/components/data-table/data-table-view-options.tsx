@@ -1,6 +1,6 @@
 "use client"
 
-import type { Table } from "@tanstack/react-table"
+import { flexRender, HeaderContext, type Table } from "@tanstack/react-table"
 import { Check, ChevronsUpDown, Settings2 } from "lucide-react"
 import * as React from "react"
 
@@ -18,7 +18,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@workspace/ui/components/popover"
-import { cn, toSentenceCase } from "@workspace/ui/lib/utils"
+import { cn } from "@workspace/ui/lib/utils"
 import useTranslation from "@workspace/ui/hooks/useTranslation"
 
 interface DataTableViewOptionsProps<TData> {
@@ -73,7 +73,10 @@ export function DataTableViewOptions<TData>({
                       }
                     >
                       <span className="truncate">
-                        {toSentenceCase(column.id)}
+                        {flexRender(
+                          column.columnDef.header,
+                          {} as HeaderContext<TData, unknown>
+                        )}
                       </span>
                       <Check
                         className={cn(
