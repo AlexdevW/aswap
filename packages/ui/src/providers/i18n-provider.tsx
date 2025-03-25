@@ -1,23 +1,69 @@
 "use client"
-import React from "react"
-import { IntlProvider } from "use-intl"
-import en from "@workspace/ui/messages/en.json" assert { type: "json" }
 
-const defaultMessages = en
-export type UIConfigProviderProps = React.ComponentProps<typeof IntlProvider>
+import React, { useMemo } from "react"
+import { merge } from "lodash-es"
+import en from "../locales/en.json" assert { type: "json" }
 
-/**
- * UI 组件库统一配置提供者
- *
- * 提供主题、国际化等全局配置能力
- */
-export function UIConfigProvider({
-  children,
-  ...restProps
-}: UIConfigProviderProps) {
+export type Locale = typeof en
+
+interface ConfigConsumerProps {
+  locale: Locale
+  extendsContextFromParent?: boolean
+}
+
+export const ConfigContext = React.createContext<ConfigConsumerProps>({
+  locale: en,
+})
+
+interface UIConfigProviderProps {
+  children?: React.ReactNode
+  locale: Locale
+  extendsContextFromParent?: boolean
+}
+
+const ProviderChildren: React.FC<
+  ConfigConsumerProps & {
+    children?: React.ReactNode
+    parentContext?: ConfigConsumerProps
+  }
+> = (props) => {
+  const { children, parentContext, ...rest } = props
+  const config = { ...parentContext }
+  Object.keys(rest).forEach((key) => {
+    const typedKey = key as keyof typeof rest
+    if (rest[typedKey] !== undefined) {
+      // @ts-expect-error -- TypeScript will validate that only known `rest`
+      config[typedKey] = rest[typedKey]
+    }
+  })
+
+  const mergeLocale = useMemo(() => {
+    if (parentContext?.locale && rest.locale) {
+      return merge(parentContext.locale, rest.locale)
+    }
+    return undefined
+  }, [parentContext?.locale, rest.locale])
+
+  config.locale = mergeLocale ?? config.locale
+
   return (
-    <IntlProvider messages={defaultMessages} {...restProps}>
+    <ConfigContext.Provider value={config as ConfigConsumerProps}>
       {children}
-    </IntlProvider>
+    </ConfigContext.Provider>
   )
 }
+
+const UIConfigProvider: React.FC<UIConfigProviderProps> = (props) => {
+  const { extendsContextFromParent = true, ...restProps } = props
+  const parentContext = React.useContext(ConfigContext)
+  const context = extendsContextFromParent ? parentContext : undefined
+  return (
+    <ProviderChildren
+      {...restProps}
+      parentContext={context}
+      extendsContextFromParent={extendsContextFromParent}
+    />
+  )
+}
+
+export { UIConfigProvider, type UIConfigProviderProps }

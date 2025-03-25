@@ -2,8 +2,8 @@ import { type ReactNode } from "react"
 import { ThemeProvider } from "./theme-provider"
 import { Locale, NextIntlClientProvider } from "next-intl"
 import { UIConfigProvider } from "@workspace/ui/providers/i18n-provider"
-import zhMessage from "@workspace/ui/messages/zh.json"
-import enMessage from "@workspace/ui/messages/en.json"
+import zhMessage from "@workspace/ui/locales/zh.json"
+import enMessage from "@workspace/ui/locales/en.json"
 import Web3Provider from "./web3-provider"
 
 type ProvidersProps = {
@@ -19,19 +19,19 @@ const localeMessageMap = {
 
 export function Providers({ children, cookie, locale }: ProvidersProps) {
   return (
-    <ThemeProvider
-      attribute="class"
-      defaultTheme="system"
-      enableSystem
-      disableTransitionOnChange
-    >
-      <NextIntlClientProvider locale={locale}>
+    <NextIntlClientProvider>
+      <ThemeProvider
+        attribute="class"
+        defaultTheme="system"
+        enableSystem
+        disableTransitionOnChange
+      >
         <Web3Provider cookie={cookie} locale={locale}>
-          <UIConfigProvider locale={locale} messages={localeMessageMap[locale]}>
+          <UIConfigProvider locale={localeMessageMap[locale]}>
             {children}
           </UIConfigProvider>
         </Web3Provider>
-      </NextIntlClientProvider>
-    </ThemeProvider>
+      </ThemeProvider>
+    </NextIntlClientProvider>
   )
 }

@@ -1,7 +1,6 @@
 "use client"
 import React, { useState } from "react"
 import LinkComponent from "./link-component"
-import { usePathname } from "next/navigation"
 import { cn } from "@workspace/ui/lib/utils"
 import { Menu } from "lucide-react"
 import { Button } from "@workspace/ui/components/button"
@@ -13,6 +12,7 @@ import {
 } from "@workspace/ui/components/drawer"
 import { useTranslations } from "next-intl"
 import LocaleSwitcher from "./locale-switcher"
+import { usePathname } from "@/i18n/navigation"
 
 const menuItems = [
   {

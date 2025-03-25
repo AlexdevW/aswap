@@ -12,7 +12,7 @@ import {
 } from "@workspace/ui/components/table"
 import { getCommonPinningStyles } from "@workspace/ui/lib/data-table"
 import { cn } from "@workspace/ui/lib/utils"
-import { useTranslations } from "use-intl"
+import useTranslation from "@workspace/ui/hooks/useTranslation"
 
 interface DataTableProps<TData> extends React.HTMLAttributes<HTMLDivElement> {
   /**
@@ -38,7 +38,7 @@ export function DataTable<TData>({
   className,
   ...props
 }: DataTableProps<TData>) {
-  const t = useTranslations("DataTable")
+  const t = useTranslation("DataTable")
   return (
     <div
       className={cn("w-full space-y-2.5 overflow-auto", className)}

@@ -19,7 +19,7 @@ import {
   PopoverTrigger,
 } from "@workspace/ui/components/popover"
 import { cn, toSentenceCase } from "@workspace/ui/lib/utils"
-import { useTranslations } from "use-intl"
+import useTranslation from "@workspace/ui/hooks/useTranslation"
 
 interface DataTableViewOptionsProps<TData> {
   table: Table<TData>
@@ -28,7 +28,7 @@ interface DataTableViewOptionsProps<TData> {
 export function DataTableViewOptions<TData>({
   table,
 }: DataTableViewOptionsProps<TData>) {
-  const t = useTranslations("DataTable")
+  const t = useTranslation("DataTable")
   const triggerRef = React.useRef<HTMLButtonElement>(null)
 
   return (

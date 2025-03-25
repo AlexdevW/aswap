@@ -1,4 +1,4 @@
-import Link from "next/link"
+import { Link } from "@/i18n/navigation"
 import React, { ComponentProps } from "react"
 
 interface Props extends ComponentProps<typeof Link> {

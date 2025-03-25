@@ -15,7 +15,7 @@ import {
   SelectValue,
 } from "@workspace/ui/components/select"
 
-import { useTranslations } from "use-intl"
+import useTranslation from "@workspace/ui/hooks/useTranslation"
 
 interface DataTablePaginationProps<TData> {
   table: Table<TData>
@@ -26,7 +26,8 @@ export function DataTablePagination<TData>({
   table,
   pageSizeOptions = [10, 20, 30, 40, 50],
 }: DataTablePaginationProps<TData>) {
-  const t = useTranslations("DataTable")
+  const t = useTranslation("DataTable")
+
   return (
     <div className="flex w-full flex-col-reverse items-center justify-between gap-4 overflow-auto p-1 sm:flex-row sm:gap-8">
       <div className="flex-1 whitespace-nowrap text-muted-foreground text-sm">
