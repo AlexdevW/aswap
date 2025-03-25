@@ -7,7 +7,7 @@ import en from "../locales/en.json" assert { type: "json" }
 export type Locale = typeof en
 
 interface ConfigConsumerProps {
-  locale: Locale
+  locale: Partial<Locale>
   extendsContextFromParent?: boolean
 }
 
@@ -17,7 +17,7 @@ export const ConfigContext = React.createContext<ConfigConsumerProps>({
 
 interface UIConfigProviderProps {
   children?: React.ReactNode
-  locale: Locale
+  locale: Partial<Locale>
   extendsContextFromParent?: boolean
 }
 
@@ -57,6 +57,7 @@ const UIConfigProvider: React.FC<UIConfigProviderProps> = (props) => {
   const { extendsContextFromParent = true, ...restProps } = props
   const parentContext = React.useContext(ConfigContext)
   const context = extendsContextFromParent ? parentContext : undefined
+
   return (
     <ProviderChildren
       {...restProps}
