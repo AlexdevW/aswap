@@ -156,5 +156,13 @@
         "title": "Select Token",
         "search": "Search tokens",
         "noTokens": "No tokens available. Please claim test tokens in the trading interface"
+    },
+    "NotFoundPage": {
+        "title": "Page Not Found",
+        "description": "Sorry, the page you are looking for does not exist or has been moved."
+    },
+    "Error": {
+        "description": "<p>We've unfortunately encountered an error.</p><p>You can try to <retry>reload the page</retry> you were visiting.</p>",
+        "title": "Something went wrong!"
     }
 }

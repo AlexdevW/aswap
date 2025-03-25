@@ -32,5 +32,5 @@ npm-debug.log*
 .DS_Store
 *.pem
 
-messages/*.d.json.ts
+
 
