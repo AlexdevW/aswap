@@ -3,7 +3,6 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@workspace/ui/components/popover"
-import { Input } from "@workspace/ui/components/input"
 import {
   Tooltip,
   TooltipContent,
@@ -16,11 +15,7 @@ import { useTranslations } from "next-intl"
 
 import {
   NumberField,
-  NumberFieldDecrement,
-  NumberFieldGroup,
-  NumberFieldIncrement,
   NumberFieldInput,
-  NumberFieldLabel,
 } from "@workspace/ui/components/number-field"
 
 export interface SettingsProps {

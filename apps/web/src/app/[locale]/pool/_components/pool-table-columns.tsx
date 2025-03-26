@@ -9,7 +9,8 @@ import { Token } from "@/types/swap"
 import BigNumber from "bignumber.js"
 import { CreatePositionsDialog } from "@/app/[locale]/positions/_components/create-positions-form-dialog"
 import { useTranslations } from "next-intl"
-import { useMemo } from "react"
+import { isEqual } from "lodash-es"
+import useCustomCompareMemo from "@/hooks/use-custom-compare-memo"
 
 // 改进格式化价格的辅助函数
 const formatPrice = (priceStr: string): string => {
@@ -39,7 +40,10 @@ export function useColumns(
 ): ColumnDef<Readonly<Pool>>[] {
   const t = useTranslations("PoolTableColumns")
 
-  const columns = useMemo<ColumnDef<Readonly<Pool>>[]>(
+  const columns = useCustomCompareMemo<
+    [typeof tokensInfo, typeof t, typeof refetch],
+    ColumnDef<Readonly<Pool>>[]
+  >(
     () => [
       {
         accessorKey: "pool",
@@ -139,7 +143,8 @@ export function useColumns(
         ),
       },
     ],
-    [tokensInfo, t, refetch]
+    [tokensInfo, t, refetch],
+    (prevDeps, nextDeps) => isEqual(prevDeps, nextDeps)
   )
 
   return columns

@@ -19,6 +19,7 @@ import {
 import { Dialog } from "@workspace/ui/components/dialog"
 import { handleTransactionError } from "@/lib/error-handlers"
 import { useTranslations } from "next-intl"
+import { useModal } from "connectkit"
 
 // 建议：这些类型可以移到单独的类型文件中
 interface CreatePositionsDialogProps
@@ -52,6 +53,7 @@ export function CreatePositionsDialog({
   )
   const formRef = React.useRef<{ submit: () => Promise<void> }>(null)
 
+  const tConnect = useTranslations("Connect")
   const t = useTranslations("CreatePositionsDialog")
   const tTransError = useTranslations("TransactionError")
 
@@ -71,6 +73,7 @@ export function CreatePositionsDialog({
   const { writeContractAsync: writeErc20Approve } = useWriteErc20Approve()
   const account = useAccount()
   const publicClient = usePublicClient()
+  const { setOpen: setConnectModalOpen } = useModal()
 
   const getErc20Allowance = async (
     tokenAddress: `0x${string}`,
@@ -131,7 +134,6 @@ export function CreatePositionsDialog({
   }
 
   const handleSubmit = async (createParams: PositionsFormType) => {
-    // 使用 useMemo 可以缓存这个结果，这里为了简化直接计算
     const tokenA = createParams.tokenA as `0x${string}`
     const tokenB = createParams.tokenB as `0x${string}`
     const [token0, token1] =
@@ -213,16 +215,25 @@ export function CreatePositionsDialog({
               {t("cancel")}
             </Button>
           </DialogCloseButton>
-          <Button
-            aria-label={t("addNewPosition")}
-            onClick={() => formRef.current?.submit()}
-            disabled={isCreatePending}
-          >
-            {isCreatePending && (
-              <Loader className="mr-2 size-4 animate-spin" aria-hidden="true" />
-            )}
-            {buttonTextMap[txStatus]}
-          </Button>
+          {account?.isConnected ? (
+            <Button
+              aria-label={t("addNewPosition")}
+              onClick={() => formRef.current?.submit()}
+              disabled={isCreatePending}
+            >
+              {isCreatePending && (
+                <Loader
+                  className="mr-2 size-4 animate-spin"
+                  aria-hidden="true"
+                />
+              )}
+              {buttonTextMap[txStatus]}
+            </Button>
+          ) : (
+            <Button onClick={() => setConnectModalOpen(true)}>
+              {tConnect("connectWallet")}
+            </Button>
+          )}
         </>
       }
       {...props}

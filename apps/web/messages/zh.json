@@ -105,7 +105,7 @@
         "positionCreated": "创建头寸成功",
         "createPosition": "创建头寸",
         "cancel": "取消",
-        "addNewPosition": "添加头寸"
+        "addNewPosition": "添加流动性"
     },
     "PositionsForm": {
         "selectTokenPair": "选择代币对",
