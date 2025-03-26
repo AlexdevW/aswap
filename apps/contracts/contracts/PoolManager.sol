@@ -27,13 +27,15 @@ contract PoolManager is Factory, IPoolManager {
 
         // 再填充数据
         poolsInfo = new PoolInfo[](length);
+    
+        uint32 currentIndex = 0;
         for (uint32 i = 0; i < pairs.length; i++) {
             address[] memory addresses = pools[pairs[i].token0][
                 pairs[i].token1
             ];
             for (uint32 j = 0; j < addresses.length; j++) {
                 IPool pool = IPool(addresses[j]);
-                poolsInfo[i + j] = PoolInfo({
+                poolsInfo[currentIndex++] = PoolInfo({
                     pool: addresses[j],
                     token0: pool.token0(),
                     token1: pool.token1(),

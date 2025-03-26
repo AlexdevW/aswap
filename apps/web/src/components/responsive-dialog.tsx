@@ -89,7 +89,7 @@ export function ResponsiveDialog({
         <DrawerTrigger asChild>{trigger}</DrawerTrigger>
       ) : null}
       <DrawerContent
-        className={cn("bg-white !rounded-3xl", contentClassName)}
+        className={cn("bg-white !rounded-t-3xl", contentClassName)}
         onPointerDownOutside={avoidDefaultDomBehavior}
         onInteractOutside={avoidDefaultDomBehavior}
       >

@@ -72,11 +72,11 @@ export function useColumns(
         enableSorting: true,
         cell: ({ row }) => parseSqrtPriceX96ToPrice(row.original.sqrtPriceX96),
       },
-      // {
-      //   accessorKey: "index",
-      //   header: "Index",
-      //   enableSorting: true,
-      // },
+      {
+        accessorKey: "index",
+        header: "Index",
+        enableSorting: true,
+      },
       {
         accessorKey: "fee",
         header: t("fee"),

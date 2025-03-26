@@ -121,7 +121,7 @@ export function CreatePoolDialog({
         </Button>
       }
       title={t("createPool")}
-      contentClassName="bg-white !rounded-3xl"
+      contentClassName="bg-white"
       footer={
         <>
           <DialogCloseButton>
