@@ -10,7 +10,7 @@ export default function useTokenBalance(token?: Token) {
     address: token?.address,
     args: [address as `0x${string}`],
     query: {
-      enabled: !!token?.address,
+      enabled: !!token?.address && !!address,
       // 每 3 秒刷新一次
       refetchInterval: 3000,
     },

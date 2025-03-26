@@ -14,6 +14,15 @@ import { Info, Settings2, AlertTriangle } from "lucide-react"
 import { useState } from "react"
 import { useTranslations } from "next-intl"
 
+import {
+  NumberField,
+  NumberFieldDecrement,
+  NumberFieldGroup,
+  NumberFieldIncrement,
+  NumberFieldInput,
+  NumberFieldLabel,
+} from "@workspace/ui/components/number-field"
+
 export interface SettingsProps {
   onDeadlineChange?: (minutes: number) => void
   onSlippageChange?: (slippage: number | undefined) => void
@@ -27,16 +36,16 @@ export default function Settings({
   const [slippage, setSlippage] = useState<number | undefined>(0.5)
   const [deadline, setDeadline] = useState<number>(30)
 
-  const handleSlippageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value === "" ? undefined : Number(e.target.value)
-    setSlippage(value)
-    onSlippageChange?.(value)
+  const handleSlippageChange = (value: number) => {
+    const val = isNaN(value) ? undefined : value
+    setSlippage(val)
+    onSlippageChange?.(val)
   }
 
-  const handleDeadlineChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value === "" ? 30 : Number(e.target.value)
-    setDeadline(value)
-    onDeadlineChange?.(value)
+  const handleDeadlineChange = (value: number) => {
+    const val = isNaN(value) ? 30 : value
+    setDeadline(val)
+    onDeadlineChange?.(val)
   }
 
   const isHighSlippage = slippage !== undefined && slippage > 5
@@ -78,15 +87,19 @@ export default function Settings({
                 >
                   {t("auto")}
                 </span>
-                <Input
-                  className="w-28 rounded-full h-8 pr-6 pl-12 text-right"
+                <NumberField
+                  maxValue={60}
+                  minValue={0}
+                  value={slippage}
                   placeholder="0.50"
-                  type="number"
-                  max={60}
-                  min={0}
-                  value={slippage ?? ""}
+                  formatOptions={{
+                    maximumFractionDigits: 2,
+                    useGrouping: false,
+                  }}
                   onChange={handleSlippageChange}
-                />
+                >
+                  <NumberFieldInput className="w-28 rounded-full h-8 pr-6 pl-12 text-right" />
+                </NumberField>
                 <span className="absolute right-2 top-1">%</span>
               </div>
             </div>
@@ -109,15 +122,19 @@ export default function Settings({
                 </Tooltip>
               </div>
               <div className="flex items-center gap-1 relative">
-                <Input
-                  className="w-28 rounded-full h-8 pr-[70px] text-right"
+                <NumberField
+                  maxValue={4320}
+                  minValue={1}
+                  value={deadline}
                   placeholder="30"
-                  type="number"
-                  max={4320}
-                  min={1}
-                  value={deadline ?? ""}
+                  formatOptions={{
+                    maximumFractionDigits: 2,
+                    useGrouping: false,
+                  }}
                   onChange={handleDeadlineChange}
-                />
+                >
+                  <NumberFieldInput className="w-28 rounded-full h-8 pr-[70px] text-right" />
+                </NumberField>
                 <span className="absolute right-2 top-1">minutes</span>
               </div>
             </div>

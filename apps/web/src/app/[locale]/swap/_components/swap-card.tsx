@@ -59,6 +59,7 @@ export default function SwapCard({
               "text-red-400": isInsufficientBalance,
             }
           )}
+          min={0}
           placeholder="0"
           value={amount ?? ""}
           onChange={(e) => {
@@ -73,6 +74,7 @@ export default function SwapCard({
             onAmountChange(value)
           }}
         />
+
         <TokenSelect
           trigger={
             <div className="flex items-center bg-white max-w-48 px-3 gap-1.5 shadow-sm rounded-3xl h-9 cursor-pointer text-muted-foreground active:scale-95 transition-all">

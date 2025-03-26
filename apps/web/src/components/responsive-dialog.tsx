@@ -54,6 +54,11 @@ export function ResponsiveDialog({
     onOpenChange?.(value)
   }
 
+  /** Generic function that prevents any default event behavior. */
+  const avoidDefaultDomBehavior = (e: Event) => {
+    e.preventDefault()
+  }
+
   if (isDesktop) {
     return (
       <Dialog open={isOpen} onOpenChange={handleOpenChange}>
@@ -62,9 +67,8 @@ export function ResponsiveDialog({
         ) : null}
         <DialogContent
           className={cn("bg-white !rounded-3xl", contentClassName)}
-          onEscapeKeyDown={(e) => e.preventDefault()}
-          onPointerDown={(e) => e.preventDefault()}
-          onInteractOutside={(e) => e.preventDefault()}
+          onPointerDownOutside={avoidDefaultDomBehavior}
+          onInteractOutside={avoidDefaultDomBehavior}
         >
           <DialogHeader>
             <DialogTitle>{title}</DialogTitle>
@@ -86,9 +90,8 @@ export function ResponsiveDialog({
       ) : null}
       <DrawerContent
         className={cn("bg-white !rounded-3xl", contentClassName)}
-        onEscapeKeyDown={(e) => e.preventDefault()}
-        onPointerDown={(e) => e.preventDefault()}
-        onInteractOutside={(e) => e.preventDefault()}
+        onPointerDownOutside={avoidDefaultDomBehavior}
+        onInteractOutside={avoidDefaultDomBehavior}
       >
         <DrawerHeader>
           <DrawerTitle>{title}</DrawerTitle>
