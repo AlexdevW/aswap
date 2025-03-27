@@ -5,6 +5,7 @@ import { UIConfigProvider } from "@workspace/ui/components/i18n-provider"
 import zhMessage from "@workspace/ui/locales/zh.json"
 import enMessage from "@workspace/ui/locales/en.json"
 import Web3Provider from "./web3-provider"
+import ProgressProvider from "./progress-provider"
 
 type ProvidersProps = {
   children: ReactNode
@@ -26,11 +27,13 @@ export function Providers({ children, cookie, locale }: ProvidersProps) {
         enableSystem
         disableTransitionOnChange
       >
-        <Web3Provider cookie={cookie} locale={locale}>
-          <UIConfigProvider locale={localeMessageMap[locale]}>
-            {children}
-          </UIConfigProvider>
-        </Web3Provider>
+        <ProgressProvider>
+          <Web3Provider cookie={cookie} locale={locale}>
+            <UIConfigProvider locale={localeMessageMap[locale]}>
+              {children}
+            </UIConfigProvider>
+          </Web3Provider>
+        </ProgressProvider>
       </ThemeProvider>
     </NextIntlClientProvider>
   )
