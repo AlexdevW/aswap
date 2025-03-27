@@ -118,7 +118,7 @@ export function CreatePositionsDialog({
 
         await writeErc20Approve({
           address: tokenAddress,
-          args: [getContractAddress("PositionManager"), amount - allowance],
+          args: [getContractAddress("PositionManager"), amount],
         })
 
         toast.success(t(`token${isToken0 ? "0" : "1"}Authorized`))
@@ -157,7 +157,13 @@ export function CreatePositionsDialog({
       // 创建头寸
       setTxStatus(TransactionStatus.CREATING_POSITION)
       toast.info(t("creatingPosition"))
-
+      console.log(
+        token0,
+        token1,
+        createParams?.index,
+        amount0Desired,
+        amount1Desired
+      )
       await writeContractAsync({
         address: getContractAddress("PositionManager"),
         args: [
@@ -177,6 +183,7 @@ export function CreatePositionsDialog({
       toast.success(t("positionCreated"))
       onSuccess?.()
     } catch (error: unknown) {
+      console.log("error", error)
       toast.error(handleTransactionError(error, tTransError))
     } finally {
       setTxStatus(TransactionStatus.IDLE)

@@ -94,7 +94,7 @@ contract PositionManager is IPositionManager, ERC721 {
         );
 
         // data 是 mint 后回调 PositionManager 会额外带的数据
-        // 需要 PoistionManger 实现回调，在回调中给 Pool 打钱
+        // 需要 PositionManger 实现回调，在回调中给 Pool 打钱
         bytes memory data = abi.encode(
             params.token0,
             params.token1,
