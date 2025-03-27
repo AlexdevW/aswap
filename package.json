@@ -2,6 +2,7 @@
   "name": "aswap",
   "version": "0.1.2",
   "private": true,
+  "description": "去中心化交易平台",
   "scripts": {
     "build": "turbo build",
     "dev": "turbo contracts#node dev",
@@ -18,11 +19,17 @@
   },
   "packageManager": "pnpm@9.12.3",
   "engines": {
-    "node": ">=20"
+    "node": ">=18"
   },
   "pnpm": {
     "patchedDependencies": {
       "connectkit@1.8.2": "patches/connectkit@1.8.2.patch"
     }
+  },
+  "author": "AlexdevW <alexdevw@gmail.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/alexdevw/aswap.git"
   }
 }
