@@ -14,10 +14,15 @@ import { DataTableToolbar } from "@workspace/ui/components/data-table/data-table
 import { Positions } from "@/types/positions"
 import { useAccount } from "wagmi"
 import useDebugTokensInfo from "@/hooks/use-debug-token-info"
+import { DataTableSkeleton } from "@workspace/ui/components/data-table/data-table-skeleton"
 
 export default function PositionsTable() {
   const account = useAccount()
-  const { data = [], refetch } = useReadPositionManagerGetAllPositions({
+  const {
+    data = [],
+    refetch,
+    isLoading,
+  } = useReadPositionManagerGetAllPositions({
     address: getContractAddress("PositionManager"),
   })
   const { writeContractAsync: writePositionManagerBurn } =
@@ -46,6 +51,16 @@ export default function PositionsTable() {
     },
     getRowId: (originalRow) => String(originalRow.id),
   })
+
+  if (isLoading) {
+    return (
+      <DataTableSkeleton
+        columnCount={columns.length}
+        rowCount={5}
+        cellWidths={columns.map((col) => (col.size ? `${col.size}px` : "auto"))}
+      />
+    )
+  }
 
   return (
     <DataTable table={table}>

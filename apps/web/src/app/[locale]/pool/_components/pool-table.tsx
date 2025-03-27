@@ -12,11 +12,16 @@ import { PoolTableToolbarActions } from "./pool-table-toolbar-actions"
 import useDebugTokensInfo from "@/hooks/use-debug-token-info"
 import { defaultChainId } from "@/config/web3"
 import { useAccount } from "wagmi"
+import { DataTableSkeleton } from "@workspace/ui/components/data-table/data-table-skeleton"
 
 export default function PoolTable() {
   const { data: tokensInfo } = useDebugTokensInfo()
   const { chainId } = useAccount()
-  const { data = [], refetch } = useReadPoolManagerGetAllPools({
+  const {
+    data = [],
+    refetch,
+    isLoading,
+  } = useReadPoolManagerGetAllPools({
     address: getContractAddress("PoolManager"),
     chainId: chainId ?? defaultChainId,
   })
@@ -33,6 +38,16 @@ export default function PoolTable() {
     getRowId: (originalRow: Pool) =>
       `${originalRow.index}${originalRow.token0}${originalRow.token1}`,
   })
+
+  if (isLoading) {
+    return (
+      <DataTableSkeleton
+        columnCount={columns.length}
+        rowCount={5}
+        cellWidths={columns.map((col) => (col.size ? `${col.size}px` : "auto"))}
+      />
+    )
+  }
 
   return (
     <DataTable table={table}>
