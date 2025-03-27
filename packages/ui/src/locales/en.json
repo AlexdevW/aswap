@@ -4,6 +4,8 @@
         "selectedCount": "Selected {selected} of {total}",
         "noResults": "No results found",
         "page": "Page {page} of {total}",
-        "viewOptions": "View"
+        "viewOptions": "View",
+        "searchColumns": "Search columns",
+        "noColumnsFound": "No columns found."
     }
 }

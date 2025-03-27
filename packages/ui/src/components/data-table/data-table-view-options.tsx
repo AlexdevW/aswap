@@ -53,9 +53,9 @@ export function DataTableViewOptions<TData>({
         onCloseAutoFocus={() => triggerRef.current?.focus()}
       >
         <Command>
-          <CommandInput placeholder="Search columns..." />
+          <CommandInput placeholder={t("searchColumns")} />
           <CommandList>
-            <CommandEmpty>No columns found.</CommandEmpty>
+            <CommandEmpty>{t("noColumnsFound")}</CommandEmpty>
             <CommandGroup>
               {table
                 .getAllColumns()

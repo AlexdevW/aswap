@@ -4,6 +4,8 @@
         "selectedCount": "已选 {selected} 条",
         "noResults": "暂无数据",
         "page": "第 {page} 页，共 {total} 页",
-        "viewOptions": "视图"
+        "viewOptions": "视图",
+        "searchColumns": "搜索列",
+        "noColumnsFound": "未找到列。"
     }
 }
