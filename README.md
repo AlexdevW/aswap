@@ -1,4 +1,4 @@
-# Decentralized Exchange Project
+# 去中心化交易平台
 
 一个基于 Next.js 15 和 Wagmi v2 构建的去中心化交易所项目。使用 Turborepo 管理的 Monorepo 架构。
 
