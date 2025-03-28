@@ -34,10 +34,10 @@
     },
     "Settings": {
         "swap": "Swap",
-        "slippageLimit": "Slippage Limit",
+        "slippageLimit": "Max slippage",
         "slippageInfo": "If the price changes more than this percentage, your transaction will be reverted.",
         "highSlippageWarning": "High slippage setting may result in significant trading losses.",
-        "transactionDeadline": "Transaction Deadline",
+        "transactionDeadline": "Tx. deadline",
         "deadlineInfo": "If your transaction is pending for longer than this time, it will be canceled. (Max: 3 days)",
         "auto": "Auto"
     },
