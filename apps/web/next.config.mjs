@@ -7,6 +7,11 @@ const nextConfig = {
     config.externals.push("pino-pretty")
     return config
   },
+  experimental: {
+    staleTimes: {
+      dynamic: 30,
+    },
+  },
 }
 const withNextIntl = createNextIntlPlugin({
   experimental: {
