@@ -1,1 +1,3 @@
 messages/*.d.json.ts
+# OpenNext build output
+.open-next
