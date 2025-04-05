@@ -20,7 +20,7 @@ export function getConfig() {
   return createConfig(
     getDefaultConfig({
       // Your dApps chains
-      chains: [hardhat, sepolia],
+      chains: IS_PROD ? [sepolia, hardhat] : [hardhat, sepolia],
       // Required API Keys
       walletConnectProjectId: WALLETCONNECT_PROJECT_ID,
       transports: {
