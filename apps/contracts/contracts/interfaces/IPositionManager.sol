@@ -41,7 +41,6 @@ interface IPositionManager is IERC721 {
         MintParams calldata params
     )
         external
-        payable
         returns (
             uint256 positionId,
             uint128 liquidity,

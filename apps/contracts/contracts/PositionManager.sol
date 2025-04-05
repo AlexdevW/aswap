@@ -58,7 +58,6 @@ contract PositionManager is IPositionManager, ERC721 {
         MintParams calldata params
     )
         external
-        payable
         override
         checkDeadline(params.deadline)
         returns (
