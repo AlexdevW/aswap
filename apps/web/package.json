@@ -9,10 +9,7 @@
     "start": "next start",
     "lint": "next lint --fix",
     "prettier": "prettier './src' --write",
-    "wagmi": "wagmi generate",
-    "preview": "opennextjs-cloudflare && wrangler dev",
-    "deploy": "opennextjs-cloudflare && wrangler deploy",
-    "cf-typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts"
+    "wagmi": "wagmi generate"
   },
   "dependencies": {
     "@bprogress/next": "^3.2.10",
@@ -37,7 +34,6 @@
     "zod": "^3.24.1"
   },
   "devDependencies": {
-    "@opennextjs/cloudflare": "^0.6.5",
     "@types/lodash-es": "^4.17.12",
     "@types/node": "^20",
     "@types/react": "18.3.0",
@@ -47,7 +43,6 @@
     "@workspace/typescript-config": "workspace:*",
     "postcss": "^8",
     "tailwindcss": "^3.4.1",
-    "typescript": "^5",
-    "wrangler": "^4.6.0"
+    "typescript": "^5"
   }
 }
