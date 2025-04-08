@@ -11,6 +11,7 @@ const nextConfig = {
     staleTimes: {
       dynamic: 30,
     },
+    sri: { algorithm: "sha256" },
   },
 }
 const withNextIntl = createNextIntlPlugin({
