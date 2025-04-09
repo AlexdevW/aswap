@@ -34,9 +34,11 @@ import { useDebouncedCallback } from "@workspace/ui/hooks/use-debounced-callback
 import Settings from "./settings"
 import { useTranslations } from "next-intl"
 import { useModal } from "connectkit"
+import { handleTransactionError } from "@/lib/error-handlers"
 
 export default function Swap() {
   const t = useTranslations("Swap")
+  const tTransError = useTranslations("TransactionError")
   const account = useAccount()
   const { setOpen: setConnectModalOpen } = useModal()
   const [isCreatePending, startCreateTransition] = useTransition()
@@ -370,10 +372,9 @@ export default function Swap() {
         refetchTokenABalance()
         refetchTokenBBalance()
         refetchPools()
-      } catch (e: unknown) {
-        if (e instanceof Error) {
-          toast.error(e.message)
-        }
+      } catch (error: unknown) {
+        console.log("error", error)
+        toast.error(handleTransactionError(error, tTransError))
       }
     })
   }
