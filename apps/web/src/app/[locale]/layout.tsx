@@ -13,6 +13,7 @@ import { hasLocale, Locale } from "next-intl"
 import { notFound } from "next/navigation"
 import { setRequestLocale } from "next-intl/server"
 import { Providers } from "@/components/providers"
+import { Analytics } from "@vercel/analytics/react"
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -59,6 +60,7 @@ export default async function RootLayout({
           <TailwindIndicator />
           <Toaster />
         </Providers>
+        <Analytics />
       </body>
     </html>
   )
