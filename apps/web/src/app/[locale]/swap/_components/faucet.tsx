@@ -1,23 +1,76 @@
 "use client"
 import { useWriteDebugTokenMint } from "@/lib/contracts"
+import { handleTransactionError } from "@/lib/error-handlers"
 import { getContractAddress } from "@/lib/utils"
 import { Button } from "@workspace/ui/components/button"
 import { Separator } from "@workspace/ui/components/separator"
 import { toast } from "@workspace/ui/components/sonner"
 import { useTranslations } from "next-intl"
-import React from "react"
-import { useAccount } from "wagmi"
+import { useAccount, useWatchAsset } from "wagmi"
+import { useState } from "react"
 
 export default function Faucet() {
   const t = useTranslations("Faucet")
+  const tTransError = useTranslations("TransactionError")
   const account = useAccount()
-  const [loading, setLoading] = React.useState(false)
+  const [loading, setLoading] = useState(false)
   const { writeContractAsync } = useWriteDebugTokenMint()
+  const { watchAssetAsync } = useWatchAsset()
+
+  // 检查代币是否已添加到钱包中
+  const isTokenAdded = (address: string): boolean => {
+    const key = `added_token_${account.address}_${address}`
+    return localStorage.getItem(key) === "true"
+  }
+
+  // 标记代币已添加到钱包
+  const markTokenAsAdded = (address: string) => {
+    // 使用账户地址+代币地址作为键，确保不同账户有独立记录
+    const key = `added_token_${account.address}_${address}`
+    localStorage.setItem(key, "true")
+  }
+
+  // 铸造成功后添加代币到钱包
+  const addTokenToWallet = async (
+    address: `0x${string}`,
+    symbol: string,
+    decimals: number = 18
+  ) => {
+    try {
+      // 检查是否已添加过此代币
+      if (isTokenAdded(address)) {
+        return
+      }
+
+      // 使用wagmi的watchAsset方法添加代币
+      await watchAssetAsync({
+        type: "ERC20",
+        options: {
+          address,
+          symbol,
+          decimals,
+        },
+      })
+
+      // 添加成功后，记录到localStorage
+      markTokenAsAdded(address)
+      toast.success(t("tokenAddedToWallet", { symbol }))
+    } catch (error: unknown) {
+      // 当用户拒绝添加代币时不显示错误提示
+      handleTransactionError(error, tTransError)
+    }
+  }
 
   const claim = async (address: `0x${string}`, name: string) => {
     if (loading) {
       return
     }
+
+    if (!account.isConnected) {
+      toast.error(t("connectWallet"))
+      return
+    }
+
     try {
       setLoading(true)
       await writeContractAsync({
@@ -28,11 +81,13 @@ export default function Faucet() {
           BigInt("10000000000000000000"),
         ],
       })
-      toast.success(`Claim 10 ${name} success`)
+      toast.success(t("claimSuccess", { amount: "10", symbol: name }))
+
+      // 铸造成功后添加代币到钱包
+      await addTokenToWallet(address, name)
     } catch (error: unknown) {
-      if (error instanceof Error) {
-        toast.error(error.message)
-      }
+      console.log("error", error)
+      toast.error(handleTransactionError(error, tTransError))
     } finally {
       setLoading(false)
     }

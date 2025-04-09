@@ -30,7 +30,8 @@
         "swap": "交易",
         "sell": "出售",
         "buy": "购买",
-        "max": "最大"
+        "max": "最大",
+        "connectWallet": "连接钱包"
     },
     "Settings": {
         "swap": "交易",
@@ -42,7 +43,10 @@
         "auto": "自动"
     },
     "Faucet": {
-        "getTestToken": "领取测试代币"
+        "getTestToken": "领取测试代币",
+        "connectWallet": "请先连接钱包",
+        "tokenAddedToWallet": "{symbol} 已添加到您的钱包",
+        "claimSuccess": "成功领取 {amount} 个 {symbol}"
     },
     "Pool": {
         "title": "资金池"
@@ -115,7 +119,8 @@
         "indexMin": "索引不能小于0",
         "insufficientBalance": "余额不足",
         "specifyLiquidity": "请指定你贡献的代币数量",
-        "max": "最高"
+        "max": "最高",
+        "connectWallet": "连接钱包"
     },
     "PositionsTableColumns": {
         "id": "ID",

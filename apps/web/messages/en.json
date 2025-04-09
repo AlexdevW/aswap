@@ -30,7 +30,8 @@
         "swap": "Swap",
         "sell": "Sell",
         "buy": "Buy",
-        "max": "Max"
+        "max": "Max",
+        "connectWallet": "Connect Wallet"
     },
     "Settings": {
         "swap": "Swap",
@@ -42,7 +43,10 @@
         "auto": "Auto"
     },
     "Faucet": {
-        "getTestToken": "Get Test Token"
+        "getTestToken": "Get Test Token",
+        "connectWallet": "Please connect your wallet first",
+        "tokenAddedToWallet": "{symbol} added to your wallet",
+        "claimSuccess": "Claim {amount} {symbol} success"
     },
     "Pool": {
         "title": "Pool"

@@ -33,10 +33,12 @@ import useTokensInfo from "@/hooks/use-debug-token-info"
 import { useDebouncedCallback } from "@workspace/ui/hooks/use-debounced-callback"
 import Settings from "./settings"
 import { useTranslations } from "next-intl"
+import { useModal } from "connectkit"
 
 export default function Swap() {
   const t = useTranslations("Swap")
   const account = useAccount()
+  const { setOpen: setConnectModalOpen } = useModal()
   const [isCreatePending, startCreateTransition] = useTransition()
   // 新增计算状态
   const [isCalculating, setIsCalculating] = useState(false)
@@ -180,7 +182,6 @@ export default function Swap() {
           setAmountB(undefined)
         }
       } catch (e: unknown) {
-        console.log(12312, "123")
         setInsufficientLiquidityDirection("out")
         if (e instanceof Error) {
           toast.error(e.message)
@@ -294,6 +295,7 @@ export default function Swap() {
     tokenAddressB,
     amountA,
     debouncedUpdateAmountBWithAmountA,
+    account.address,
   ])
 
   useEffect(() => {
@@ -307,6 +309,7 @@ export default function Swap() {
     tokenAddressA,
     amountB,
     debouncedUpdateAmountAWithAmountB,
+    account.address,
   ])
 
   const { writeContractAsync: writeExactInput } = useWriteSwapRouterExactInput()
@@ -386,6 +389,7 @@ export default function Swap() {
   )
 
   function getButtonText() {
+    if (!account.isConnected) return t("connectWallet")
     if (!tokenAddressA || !tokenAddressB) return t("selectToken")
     if (insufficientLiquidityDirection) {
       return insufficientLiquidityDirection === "in"
@@ -449,18 +453,23 @@ export default function Swap() {
         />
         <Button
           className="w-full mt-1 rounded-xl"
-          onClick={handleTransaction}
+          onClick={
+            account.isConnected
+              ? handleTransaction
+              : () => setConnectModalOpen(true)
+          }
           disabled={
-            !tokenAddressA ||
-            !tokenAddressB ||
-            !amountA ||
-            !amountB ||
-            !tokenABalance ||
-            swapPools.length === 0 ||
-            parseAmountToBigInt(amountA!, tokenA) >
-              parseAmountToBigInt(tokenABalance, tokenA) ||
-            isCreatePending ||
-            isCalculating
+            account.isConnected &&
+            (!tokenAddressA ||
+              !tokenAddressB ||
+              !amountA ||
+              !amountB ||
+              !tokenABalance ||
+              swapPools.length === 0 ||
+              parseAmountToBigInt(amountA!, tokenA) >
+                parseAmountToBigInt(tokenABalance, tokenA) ||
+              isCreatePending ||
+              isCalculating)
           }
         >
           {(isCreatePending || isCalculating) && (
